@@ -1,0 +1,96 @@
+// A collection of motivational quotes
+const quotes = [
+  "Believe you can and you're halfway there.",
+  "You are never too old to set another goal or to dream a new dream.",
+  "It does not matter how slowly you go as long as you do not stop.",
+  "The only way to do great work is to love what you do.",
+  "Don't watch the clock; do what it does. Keep going.",
+  "Success is not final, failure is not fatal: It is the courage to continue that counts.",
+  "Believe in yourself and all that you are. Know that there is something inside you that is greater than any obstacle.",
+  "Your time is limited, don't waste it living someone else's life.",
+  "The future belongs to those who believe in the beauty of their dreams.",
+  "Don't be pushed around by the fears in your mind. Be led by the dreams in your heart.",
+  "The only limit to our realization of tomorrow will be our doubts of today.",
+  "The way to get started is to quit talking and begin doing.",
+  "You are braver than you believe, stronger than you seem, and smarter than you think.",
+  "Everything you've ever wanted is on the other side of fear.",
+  "Hardships often prepare ordinary people for an extraordinary destiny.",
+  "Start where you are. Use what you have. Do what you can.",
+  "The only person you are destined to become is the person you decide to be.",
+  "What you get by achieving your goals is not as important as what you become by achieving your goals.",
+  "Challenges are what make life interesting and overcoming them is what makes life meaningful.",
+  "Your attitude, not your aptitude, will determine your altitude.",
+  "If you want to lift yourself up, lift up someone else.",
+  "I have not failed. I've just found 10,000 ways that won't work.",
+  "Success is stumbling from failure to failure with no loss of enthusiasm.",
+  "You miss 100% of the shots you don't take.",
+  "The greatest glory in living lies not in never falling, but in rising every time we fall.",
+  "What we fear doing most is usually what we most need to do.",
+  "I am not a product of my circumstances. I am a product of my decisions.",
+  "The question isn't who is going to let me; it's who is going to stop me.",
+  "When everything seems to be going against you, remember that the airplane takes off against the wind, not with it.",
+  "It is during our darkest moments that we must focus to see the light.",
+  "Whether you think you can or you think you can't, you're right.",
+  "Life is 10% what happens to me and 90% of how I react to it.",
+  "When one door of happiness closes, another opens.",
+  "Nothing is impossible, the word itself says, 'I'm possible!'",
+  "The only way to achieve the impossible is to believe it is possible.",
+  "Too many of us are not living our dreams because we are living our fears.",
+  "The best time to plant a tree was 20 years ago. The second best time is now.",
+  "The purpose of our lives is to be happy.",
+  "Don't cry because it's over, smile because it happened.",
+  "Success is not how high you have climbed, but how you make a positive difference to the world.",
+  "Happiness is not something ready-made. It comes from your own actions.",
+  "Don't let yesterday take up too much of today.",
+  "You don't have to be great to start, but you have to start to be great.",
+  "Act as if what you do makes a difference. It does.",
+  "We become what we think about.",
+  "The mind is everything. What you think you become.",
+  "Life is not about finding yourself. Life is about creating yourself.",
+  "If you can dream it, you can do it.",
+  "Either you run the day, or the day runs you.",
+  "Today's accomplishments were yesterday's impossibilities."
+];
+
+/**
+ * Generates a seeded random number based on a string input
+ * @param seed String to use as seed
+ * @returns A number between 0 and 1
+ */
+function seededRandom(seed: string): number {
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) {
+    hash = ((hash << 5) - hash) + seed.charCodeAt(i);
+    hash = hash & hash; // Convert to 32bit integer
+  }
+  
+  // Create a decimal between 0 and 1
+  const random = Math.abs(Math.sin(hash) * 10000) % 1;
+  return random;
+}
+
+/**
+ * Formats a date into a string (YYYY-MM-DD)
+ * @param date Date to format
+ * @returns Formatted date string
+ */
+export function formatDate(date: Date): string {
+  return date.toISOString().split('T')[0];
+}
+
+/**
+ * Generates a motivational quote based on name and date
+ * @param name User's name
+ * @param date Current date
+ * @returns A motivational quote
+ */
+export function generateQuote(name: string, date: string): string {
+  // Create a seed from the name and date
+  const seed = `${name.toLowerCase()}-${date}`;
+  
+  // Get a random index based on the seed
+  const randomIndex = Math.floor(seededRandom(seed) * quotes.length);
+  
+  // Return the quote at that index
+  return quotes[randomIndex];
+}
