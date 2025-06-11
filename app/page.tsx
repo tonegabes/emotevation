@@ -7,6 +7,7 @@ import { generateQuote, formatDate } from './utils/quoteGenerator';
 export default function Home() {
   const [name, setName] = useState("");
   const [quote, setQuote] = useState("");
+  const [isUnmotivational, setIsUnmotivational] = useState(false);
   const [currentDate, setCurrentDate] = useState("");
   const [hasGenerated, setHasGenerated] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -24,8 +25,9 @@ export default function Home() {
     
     // Simulate loading for better UX
     setTimeout(() => {
-      const newQuote = generateQuote(name, currentDate);
-      setQuote(newQuote);
+      const result = generateQuote(name, currentDate);
+      setQuote(result.text);
+      setIsUnmotivational(result.isUnmotivational);
       setHasGenerated(true);
       setIsGenerating(false);
     }, 600);
@@ -98,7 +100,12 @@ export default function Home() {
           
           {hasGenerated && (
             <div className="mt-12 w-full animate-fade-in relative">
-              <QuoteCard name={name} date={currentDate} quote={quote} />
+              <QuoteCard 
+                name={name} 
+                date={currentDate} 
+                quote={quote} 
+                isUnmotivational={isUnmotivational}
+              />
             </div>
           )}
         </main>
