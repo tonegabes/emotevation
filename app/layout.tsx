@@ -28,6 +28,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        {process.env.NODE_ENV === 'production' && (
+          // Use a non-blocking script instead of synchronous script
+          <script src="/emotevation/gh-pages-router.js" async defer />
+        )}
+      </head>
       <body
         className={`${inter.variable} font-sans antialiased`}
       >

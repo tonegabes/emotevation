@@ -34,7 +34,7 @@ const QuoteCard: React.FC<QuoteCardProps> = ({ name, date, quote }) => {
         </div>
         
         <blockquote className="text-xl italic text-center mb-6 font-light leading-relaxed">
-          "{quote}"
+          &ldquo;{quote}&rdquo;
         </blockquote>
         
         <div className="w-full pt-4 border-t border-white/10">
