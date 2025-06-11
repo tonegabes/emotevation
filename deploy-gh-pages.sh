@@ -17,4 +17,4 @@ cp public/404.html out/404.html
 echo "Deploying to GitHub Pages..."
 npm run deploy
 
-echo "Deployment completed! Your site should be available at: https://tonegabes.github.io/motevation/"
+echo "Deployment completed! Your site should be available at: https://tonegabes.github.io/emotevation/"

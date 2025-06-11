@@ -9,7 +9,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Daily Motivation - Your Personal Quote Generator",
+  title: "Emotevation - Your Personal Motivational Quote Generator",
   description: "Get your daily motivational quote based on your name and current date",
   icons: {
     icon: [

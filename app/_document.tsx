@@ -5,7 +5,7 @@ export default function Document() {
     <Html lang="en">
       <Head>
         {process.env.NODE_ENV === 'production' && 
-          <script src="/motevation/gh-pages-router.js" />
+          <script src="/emotevation/gh-pages-router.js" />
         }
       </Head>
       <body>

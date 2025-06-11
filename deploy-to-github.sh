@@ -12,4 +12,4 @@ cp public/github-index.html out/index.html
 echo "Deploying to GitHub Pages..."
 npx gh-pages -d out
 
-echo "Deployment complete! Check https://tonegabes.github.io/motevation/"
+echo "Deployment complete! Check https://tonegabes.github.io/emotevation/"

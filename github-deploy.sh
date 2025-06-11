@@ -7,4 +7,4 @@ touch out/.nojekyll
 echo "Deploying to GitHub Pages..."
 npx gh-pages -d out
 
-echo "Done! Check your site at https://tonegabes.github.io/motevation/"
+echo "Done! Check your site at https://tonegabes.github.io/emotevation/"
