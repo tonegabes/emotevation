@@ -3,13 +3,15 @@
 <head>
   <meta charset="utf-8">
   <title>Emotevation - Daily Motivation Quote Generator</title>
-  <meta http-equiv="refresh" content="0;url=/emotevation/">
+  <script>
+    // Check if we need to redirect
+    if (window.location.pathname === '/' && !window.location.pathname.includes('/emotevation')) {
+      window.location.href = "/emotevation/";
+    }
+  </script>
 </head>
 <body>
-  <p>Redirecting to the Emotevation app...</p>
+  <p>Loading the Emotevation app...</p>
   <p><a href="/emotevation/">Click here if you are not redirected automatically</a></p>
-  <script>
-    window.location.href = "/emotevation/";
-  </script>
 </body>
 </html>
