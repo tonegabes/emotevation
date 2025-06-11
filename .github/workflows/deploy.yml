@@ -23,10 +23,17 @@ jobs:
     - name: Build
       run: npm run build
 
+    - name: Prepare for GitHub Pages
+      run: |
+        touch out/.nojekyll
+        cp public/github-index.html out/index.html
+        cp public/404.html out/404.html
+        cp public/gh-pages-router.js out/
+
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v3
       with:
-        path: './dist'
+        path: './out'
 
   deploy:
     needs: build
