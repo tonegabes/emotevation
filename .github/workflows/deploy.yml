@@ -26,6 +26,7 @@ jobs:
     - name: Prepare for GitHub Pages
       run: |
         touch out/.nojekyll
+        cp public/index.html out/
 
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v3
