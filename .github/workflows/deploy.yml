@@ -26,8 +26,6 @@ jobs:
     - name: Prepare for GitHub Pages
       run: |
         touch out/.nojekyll
-        # Don't use the custom index as it may cause redirect loops
-        cp out/404.html out/404.html
 
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v3
