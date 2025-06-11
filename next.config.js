@@ -3,8 +3,8 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   output: 'export',
-  basePath: '/emotevation',
-  assetPrefix: '/emotevation/',
+  basePath: process.env.NODE_ENV === 'production' ? '/emotevation' : '',
+  assetPrefix: process.env.NODE_ENV === 'production' ? '/emotevation/' : '',
   images: {
     unoptimized: true,
   },
