@@ -8,7 +8,7 @@ echo "Starting deployment process..."
 
 # Clean previous builds
 echo "Cleaning previous builds..."
-rm -rf out
+rm -rf dist
 
 # Build the Next.js app
 echo "Building the Next.js app..."
@@ -16,30 +16,30 @@ NODE_ENV=production npm run build
 
 # Ensure .nojekyll file exists
 echo "Creating .nojekyll file..."
-touch out/.nojekyll
+touch dist/.nojekyll
 
 # Copy GitHub Pages routing files
 echo "Copying routing files for GitHub Pages..."
-cp public/404.html out/404.html
-cp public/gh-pages-router.js out/gh-pages-router.js
-cp public/error-handler.js out/error-handler.js
+cp public/404.html dist/404.html
+cp public/gh-pages-router.js dist/gh-pages-router.js
+cp public/error-handler.js dist/error-handler.js
 
 # Create a simplified index.html in the root
-cp public/index.html out/index.html
+cp public/index.html dist/index.html
 
 # Run the script to fix HTML paths
 echo "Fixing HTML paths for Next.js scripts..."
 node scripts/fix-html-paths.js
 
 # Create the emotevation directory if it doesn't exist
-mkdir -p out/emotevation
+mkdir -p dist/emotevation
 
 # Copy the special 404 file for the emotevation directory
 echo "Adding special 404 handling for client-side routing..."
-cp public/404-emotevation.html out/emotevation/404.html
+cp public/404-emotevation.html dist/emotevation/404.html
 
 # Create a CNAME file if you have a custom domain
-# echo "yourdomain.com" > out/CNAME
+# echo "yourdomain.com" > dist/CNAME
 
 # Ensure gh-pages is installed locally
 if ! npm list gh-pages > /dev/null 2>&1; then
@@ -49,7 +49,7 @@ fi
 
 # Deploy to GitHub Pages
 echo "Deploying to GitHub Pages..."
-npx gh-pages -d out
+npx gh-pages -d dist
 
 # Check deployment status
 if [ $? -eq 0 ]; then

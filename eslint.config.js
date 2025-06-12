@@ -10,7 +10,7 @@ export default [
     rules: {
       "next/core-web-vitals": "error"
     },
-    ignores: ["node_modules/**", ".next/**", "out/**", "public/**"]
+    ignores: ["node_modules/**", ".next/**", "dist/**", "public/**"]
   },
   {
     files: ["app/**/*.{js,jsx,ts,tsx}"],

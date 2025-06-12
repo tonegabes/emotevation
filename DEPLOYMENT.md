@@ -75,10 +75,10 @@ If you prefer to deploy manually without using the script:
 NODE_ENV=production npm run build
 
 # Prepare the output for GitHub Pages
-touch out/.nojekyll
-cp public/github-index.html out/index.html
-cp public/404.html out/404.html
-cp public/gh-pages-router.js out/gh-pages-router.js
+touch dist/.nojekyll
+cp public/github-index.html dist/index.html
+cp public/404.html dist/404.html
+cp public/gh-pages-router.js dist/gh-pages-router.js
 
 # Deploy using gh-pages
 npm run deploy

@@ -8,7 +8,7 @@ echo "==== Building Next.js app without linting ===="
 
 # Clean previous builds
 echo "Cleaning previous builds..."
-rm -rf out .next
+rm -rf dist .next
 
 # Ensure TypeScript is installed
 echo "Making sure TypeScript is installed..."

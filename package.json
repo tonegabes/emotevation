@@ -1,6 +1,6 @@
 {
   "name": "emotevation",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -10,7 +10,7 @@
     "lint-fix": "./lint-fix.sh",
     "simple-lint": "node simple-lint.js",
     "type-check": "./type-check.sh",
-    "deploy": "gh-pages -d out",
+    "deploy": "gh-pages -d dist",
     "reinstall": "./install-deps.sh",
     "postinstall": "node scripts/check-dependencies.js"
   },

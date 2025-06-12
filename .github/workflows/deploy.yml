@@ -54,18 +54,18 @@ jobs:
     - name: Prepare for GitHub Pages
       run: |
         # Ensure .nojekyll file exists
-        touch out/.nojekyll
+        touch dist/.nojekyll
         
         # Copy GitHub Pages routing files
-        cp public/github-index.html out/index.html
-        cp public/404.html out/404.html
-        cp public/gh-pages-router.js out/gh-pages-router.js
-        cp public/error-handler.js out/error-handler.js
+        cp public/github-index.html dist/index.html
+        cp public/404.html dist/404.html
+        cp public/gh-pages-router.js dist/gh-pages-router.js
+        cp public/error-handler.js dist/error-handler.js
         
         # Ensure emotevation index.html doesn't redirect to itself
-        if [ -d "out/emotevation" ]; then
+        if [ -d "dist/emotevation" ]; then
           echo "Customizing emotevation/index.html to include error handling"
-          cat > out/emotevation/index.html << EOL
+          cat > dist/emotevation/index.html << EOL
 <!DOCTYPE html>
 <html>
 <head>
@@ -102,7 +102,7 @@ EOL
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v3
       with:
-        path: './out'
+        path: './dist'
 
   deploy:
     needs: build

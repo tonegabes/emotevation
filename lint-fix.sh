@@ -15,7 +15,7 @@ echo "Creating simplified ESLint configuration..."
 cat > .eslintrc.json << EOL
 {
   "extends": ["next/core-web-vitals"],
-  "ignorePatterns": ["out/", ".next/", "node_modules/"]
+  "ignorePatterns": ["dist/", ".next/", "node_modules/"]
 }
 EOL
 
@@ -23,7 +23,7 @@ echo "Creating .eslintignore file..."
 cat > .eslintignore << EOL
 node_modules/
 .next/
-out/
+dist/
 public/
 EOL
 

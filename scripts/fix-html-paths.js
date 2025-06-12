@@ -8,13 +8,13 @@ const path = require('path');
 const glob = require('glob');
 
 // Paths
-const outDir = path.join(__dirname, '../out');
+const outDir = path.join(__dirname, '../dist');
 const emotevationDir = path.join(outDir, 'emotevation');
 const indexFile = path.join(emotevationDir, 'index.html');
 
 // Check if directories exist
 if (!fs.existsSync(outDir)) {
-  console.error('Error: out directory does not exist');
+  console.error('Error: dist directory does not exist');
   process.exit(1);
 }
 

@@ -9,7 +9,7 @@ const nextConfig = {
     unoptimized: true,
   },
   trailingSlash: true,
-  distDir: 'out',
+  distDir: 'dist',
   eslint: {
     // Completely disable ESLint during builds
     ignoreDuringBuilds: true,
