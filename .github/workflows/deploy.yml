@@ -1,104 +1,84 @@
 name: Deploy to GitHub Pages
 
+# This workflow builds and deploys the Emotevation app to GitHub Pages
+# Fixed on June 11, 2025 to resolve YAML syntax issues with heredoc content
+# Now using file copy instead of inline HTML creation for better YAML compatibility
+
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'npm'
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
 
-    - name: Add npm flags to fix engine warnings
-      run: |
-        echo "Setting npm config to ignore engine warnings..."
-        npm config set engine-strict false
-        npm config set legacy-peer-deps true
+      - name: Add npm flags to fix engine warnings
+        run: |
+          echo "Setting npm config to ignore engine warnings..."
+          npm config set engine-strict false
+          npm config set legacy-peer-deps true
 
-    - name: Install dependencies with fallback
-      id: install-deps
-      run: |
-        echo "Installing dependencies with standard approach..."
-        # Remove node_modules if it exists to ensure clean install
-        [ -d "node_modules" ] && rm -rf node_modules
-        # Clean npm cache to avoid dependency issues
-        npm cache clean --force
-        
-        # Make install script executable
-        chmod +x install-deps.sh
-        
-        # Run the custom install script that handles dependency conflicts
-        ./install-deps.sh
+      - name: Install dependencies with fallback
+        id: install-deps
+        run: |
+          echo "Installing dependencies with standard approach..."
+          # Remove node_modules if it exists to ensure clean install
+          [ -d "node_modules" ] && rm -rf node_modules
+          # Clean npm cache to avoid dependency issues
+          npm cache clean --force
 
-    - name: Build
-      run: |
-        # Show ESLint version for debugging
-        echo "Checking installed ESLint version:"
-        npm list eslint
-        
-        # Make build script executable
-        chmod +x build-no-lint.sh
-        
-        # Build with ESLint disabled
-        GITHUB_ACTIONS=true ./build-no-lint.sh
-        
-    - name: Prepare for GitHub Pages
-      run: |
-        # Ensure .nojekyll file exists
-        touch dist/.nojekyll
-        
-        # Copy GitHub Pages routing files
-        cp public/github-index.html dist/index.html
-        cp public/404.html dist/404.html
-        cp public/gh-pages-router.js dist/gh-pages-router.js
-        cp public/error-handler.js dist/error-handler.js
-        
-        # Ensure emotevation index.html doesn't redirect to itself
-        if [ -d "dist/emotevation" ]; then
-          echo "Customizing emotevation/index.html to include error handling"
-          cat > dist/emotevation/index.html << EOL
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>Emotevation - Personalized Daily Motivation</title>
-  <meta name="description" content="Get personalized motivational quotes or reality checks based on your name and date. Every combination creates a unique result to inspire your day.">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta property="og:title" content="Emotevation - Personalized Daily Motivation">
-  <meta property="og:description" content="Get personalized motivational quotes or reality checks based on your name and date.">
-  <meta property="og:image" content="https://tonegabes.github.io/emotevation/opengraph-image.png">
-  <meta property="og:url" content="https://tonegabes.github.io/emotevation/">
-  <meta property="og:type" content="website">
-  <meta name="twitter:card" content="summary_large_image">
-  
-  <!-- GitHub Pages router script -->
-  <script src="/emotevation/gh-pages-router.js"></script>
-  <script src="/emotevation/error-handler.js"></script>
-  
-  <!-- Load Next.js scripts -->
-</head>
-<body>
-  <div id="__next"></div>
-</body>
-</html>
-EOL
-          
-          # Run the script to fix HTML paths in the emotevation/index.html file
-          node scripts/fix-html-paths.js
-        fi
+          # Make install script executable
+          chmod +x install-deps.sh
 
-    - name: Upload artifact
-      uses: actions/upload-pages-artifact@v3
-      with:
-        path: './dist'
+          # Run the custom install script that handles dependency conflicts
+          ./install-deps.sh
+
+      - name: Build
+        run: |
+          # Show ESLint version for debugging
+          echo "Checking installed ESLint version:"
+          npm list eslint
+
+          # Make build script executable
+          chmod +x build-no-lint.sh
+
+          # Build with ESLint disabled
+          GITHUB_ACTIONS=true ./build-no-lint.sh
+
+      - name: Prepare for GitHub Pages
+        run: |
+          # Ensure .nojekyll file exists
+          touch dist/.nojekyll
+
+          # Copy GitHub Pages routing files
+          cp public/github-index.html dist/index.html
+          cp public/404.html dist/404.html
+          cp public/gh-pages-router.js dist/gh-pages-router.js
+          cp public/error-handler.js dist/error-handler.js
+
+          # Ensure emotevation index.html doesn't redirect to itself
+          if [ -d "dist/emotevation" ]; then
+            echo "Customizing emotevation/index.html to include error handling"
+            cp public/404-emotevation.html dist/emotevation/index.html
+
+            # Run the script to fix HTML paths in the emotevation/index.html file
+            node scripts/fix-html-paths.js
+          fi
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './dist'
 
   deploy:
     needs: build
@@ -113,6 +93,6 @@ EOL
       url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
-    - name: Deploy to GitHub Pages
-      id: deployment
-      uses: actions/deploy-pages@v4
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
