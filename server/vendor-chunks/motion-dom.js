@@ -371,6 +371,16 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 
 /***/ }),
 
+/***/ "(ssr)/./node_modules/motion-dom/dist/es/animation/waapi/utils/accelerated-values.mjs":
+/*!**************************************************************************************!*\
+  !*** ./node_modules/motion-dom/dist/es/animation/waapi/utils/accelerated-values.mjs ***!
+  \**************************************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   acceleratedValues: () => (/* binding */ acceleratedValues)\n/* harmony export */ });\n/**\n * A list of values that can be hardware-accelerated.\n */\nconst acceleratedValues = new Set([\n    \"opacity\",\n    \"clipPath\",\n    \"filter\",\n    \"transform\",\n    // TODO: Can be accelerated but currently disabled until https://issues.chromium.org/issues/41491098 is resolved\n    // or until we implement support for linear() easing.\n    // \"background-color\"\n]);\n\n\n//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiKHNzcikvLi9ub2RlX21vZHVsZXMvbW90aW9uLWRvbS9kaXN0L2VzL2FuaW1hdGlvbi93YWFwaS91dGlscy9hY2NlbGVyYXRlZC12YWx1ZXMubWpzIiwibWFwcGluZ3MiOiI7Ozs7QUFBQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7O0FBRTZCIiwic291cmNlcyI6WyJ3ZWJwYWNrOi8vZW1vdGV2YXRpb24vLi9ub2RlX21vZHVsZXMvbW90aW9uLWRvbS9kaXN0L2VzL2FuaW1hdGlvbi93YWFwaS91dGlscy9hY2NlbGVyYXRlZC12YWx1ZXMubWpzPzg2YjEiXSwic291cmNlc0NvbnRlbnQiOlsiLyoqXG4gKiBBIGxpc3Qgb2YgdmFsdWVzIHRoYXQgY2FuIGJlIGhhcmR3YXJlLWFjY2VsZXJhdGVkLlxuICovXG5jb25zdCBhY2NlbGVyYXRlZFZhbHVlcyA9IG5ldyBTZXQoW1xuICAgIFwib3BhY2l0eVwiLFxuICAgIFwiY2xpcFBhdGhcIixcbiAgICBcImZpbHRlclwiLFxuICAgIFwidHJhbnNmb3JtXCIsXG4gICAgLy8gVE9ETzogQ2FuIGJlIGFjY2VsZXJhdGVkIGJ1dCBjdXJyZW50bHkgZGlzYWJsZWQgdW50aWwgaHR0cHM6Ly9pc3N1ZXMuY2hyb21pdW0ub3JnL2lzc3Vlcy80MTQ5MTA5OCBpcyByZXNvbHZlZFxuICAgIC8vIG9yIHVudGlsIHdlIGltcGxlbWVudCBzdXBwb3J0IGZvciBsaW5lYXIoKSBlYXNpbmcuXG4gICAgLy8gXCJiYWNrZ3JvdW5kLWNvbG9yXCJcbl0pO1xuXG5leHBvcnQgeyBhY2NlbGVyYXRlZFZhbHVlcyB9O1xuIl0sIm5hbWVzIjpbXSwic291cmNlUm9vdCI6IiJ9\n//# sourceURL=webpack-internal:///(ssr)/./node_modules/motion-dom/dist/es/animation/waapi/utils/accelerated-values.mjs\n");
+
+/***/ }),
+
 /***/ "(ssr)/./node_modules/motion-dom/dist/es/animation/waapi/utils/apply-generator.mjs":
 /*!***********************************************************************************!*\
   !*** ./node_modules/motion-dom/dist/es/animation/waapi/utils/apply-generator.mjs ***!
