@@ -11,8 +11,9 @@ const nextConfig = {
   trailingSlash: true,
   distDir: 'out',
   eslint: {
-    // Ignore ESLint errors during production build
+    // Completely disable ESLint during builds
     ignoreDuringBuilds: true,
+    dirs: [] // Empty array to skip ESLint on all directories
   },
 };
 

@@ -85,17 +85,21 @@ try {
 let needsFixing = false;
 if (packageJson.devDependencies && packageJson.devDependencies.eslint) {
   const eslintVersion = packageJson.devDependencies.eslint;
+  const nextConfigVersion = packageJson.devDependencies['eslint-config-next'];
   
-  // Check if using ESLint 9.x with Next.js
-  if (eslintVersion.includes('^9') && packageJson.devDependencies['eslint-config-next']) {
-    log('⚠️  Detected ESLint 9.x which is incompatible with eslint-config-next!', colors.yellow);
-    log('🔧 Fixing ESLint version to 8.57.0...', colors.green);
-    
-    // Update package.json with fixed ESLint version
-    packageJson.devDependencies.eslint = '~8.57.0';
-    fs.writeFileSync(packagePath, JSON.stringify(packageJson, null, 2));
-    
-    needsFixing = true;
+  // Check for specific version conflicts
+  if (nextConfigVersion && nextConfigVersion.includes('14.')) {
+    // For Next.js 14, recommend ESLint v9 (use latest)
+    if (!eslintVersion.includes('9.')) {
+      log('⚠️  ESLint version may be incompatible with Next.js 14!', colors.yellow);
+      log('🔧 Fixing ESLint version to ^9.28.0...', colors.green);
+      
+      // Update package.json with fixed ESLint version
+      packageJson.devDependencies.eslint = '^9.28.0';
+      fs.writeFileSync(packagePath, JSON.stringify(packageJson, null, 2));
+      
+      needsFixing = true;
+    }
   }
 }
 
@@ -113,7 +117,7 @@ for (const issue of knownIssues) {
 if (needsFixing) {
   log('📦 Running npm install to apply dependency fixes...', colors.cyan);
   try {
-    execSync('npm install eslint@8.57.0 --save-dev', { stdio: 'inherit' });
+    execSync('npm install eslint@9.28.0 --save-dev', { stdio: 'inherit' });
     log('✅ Dependencies fixed successfully!', colors.green);
   } catch (error) {
     log(`❌ Error fixing dependencies: ${error.message}`, colors.red);
