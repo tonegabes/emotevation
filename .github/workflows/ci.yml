@@ -19,8 +19,36 @@ jobs:
         node-version: '18'
         cache: 'npm'
     
-    - name: Install dependencies
-      run: npm ci
+    - name: Install dependencies with fallback
+      id: install-deps
+      run: |
+        echo "Installing dependencies with standard approach..."
+        # Remove node_modules if it exists to ensure clean install
+        [ -d "node_modules" ] && rm -rf node_modules
+        # Clean npm cache to avoid dependency issues
+        npm cache clean --force
+        # Check for package-lock.json version
+        if grep -q "\"lockfileVersion\": 3" package-lock.json; then
+          echo "Using npm version 7+ lock file format"
+        else
+          echo "Warning: package-lock.json might be outdated. Consider regenerating it with npm@7+."
+        fi
+        # Try standard install first
+        npm ci && echo "install_method=npm_ci" >> $GITHUB_OUTPUT || echo "Standard npm ci failed, will try fallback method"
+      continue-on-error: true
+
+    - name: Fallback to npm install if ci failed
+      if: steps.install-deps.outcome == 'failure' || steps.install-deps.outputs.install_method != 'npm_ci'
+      run: |
+        echo "Fallback to npm install..."
+        # Make dependency check script executable
+        chmod +x scripts/check-dependencies.js
+        
+        # Run dependency check script
+        node scripts/check-dependencies.js
+        
+        # Install with standard npm install
+        npm install || npm install --legacy-peer-deps
     
     - name: Lint
       run: npm run lint

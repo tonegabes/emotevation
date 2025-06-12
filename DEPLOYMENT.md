@@ -6,7 +6,29 @@ This document describes how to deploy the Emotevation application to GitHub Page
 
 - A GitHub account
 - Git installed on your local machine
-- Node.js and npm installed on your local machine
+- Node.js 18.x or later
+- npm 7.x or later
+
+## Dependency Management
+
+If you're experiencing dependency conflicts (especially with ESLint), follow these steps:
+
+1. Run the reinstall script:
+   ```bash
+   npm run reinstall
+   ```
+
+2. If you're still having issues, try a manual reinstall:
+   ```bash
+   rm -rf node_modules
+   npm cache clean --force
+   npm install
+   ```
+
+3. For specific ESLint conflicts, ensure you're using a compatible version:
+   ```bash
+   npm install eslint@8.57.0 --save-dev
+   ```
 
 ## GitHub Pages Configuration
 
@@ -106,6 +128,12 @@ GitHub Pages doesn't natively support client-side routing used by Single Page Ap
 3. **404 Errors on Routes**: Make sure the gh-pages-router.js is included and working correctly.
 
 4. **GitHub Actions Failures**: Check the workflow logs in the "Actions" tab of your GitHub repository.
+
+5. **Dependency Conflicts**: If you encounter errors like `npm error code ERESOLVE` or conflicts with ESLint:
+   - Try running `npm run reinstall` to fix dependency issues
+   - For ESLint conflicts, ensure you're using version 8.x with `npm install eslint@8.57.0 --save-dev`
+   - Use `npm install --legacy-peer-deps` only as a last resort as it may lead to incompatible packages
+   - Check that your package-lock.json is up-to-date with `npm install --package-lock-only`
 
 ## Additional Resources
 

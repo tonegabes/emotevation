@@ -87,6 +87,46 @@ The application will be deployed to: https://tonegabes.github.io/emotevation/
 
 For detailed deployment instructions, see [DEPLOYMENT.md](DEPLOYMENT.md).
 
+## Troubleshooting
+
+### Common Issues
+
+#### ESLint Version Conflicts
+
+If you encounter errors like:
+```
+npm error code ERESOLVE
+npm error ERESOLVE could not resolve
+npm error While resolving: eslint-config-next@14.x.x
+npm error Found: eslint@9.x.x
+```
+
+This is due to incompatible ESLint versions. To fix:
+
+```bash
+# Run the reinstall script
+npm run reinstall
+
+# Or manually fix the ESLint version
+npm install eslint@8.57.0 --save-dev
+```
+
+#### GitHub Actions Build Failures
+
+If your GitHub Actions workflows are failing, check the logs for specific errors. Common fixes:
+
+```bash
+# Clean install locally and push package-lock.json
+rm -rf node_modules
+npm cache clean --force
+npm install
+git add package-lock.json
+git commit -m "Update package-lock.json to fix dependency issues"
+git push
+```
+
+For more troubleshooting information, see [DEPLOYMENT.md](DEPLOYMENT.md).
+
 ## Deploy on Vercel
 
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.

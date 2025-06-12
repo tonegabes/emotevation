@@ -1,0 +1,31 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:base"
+  ],
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "automerge": true
+    },
+    {
+      "matchDepTypes": ["devDependencies"],
+      "matchPackagePatterns": ["eslint"],
+      "allowedVersions": "<9.0.0"
+    },
+    {
+      "matchPackageNames": ["eslint"],
+      "allowedVersions": "8.x"
+    },
+    {
+      "matchPackageNames": ["next", "eslint-config-next"],
+      "groupName": "next",
+      "automerge": false
+    }
+  ],
+  "lockFileMaintenance": {
+    "enabled": true,
+    "automerge": true
+  },
+  "ignoreDeps": []
+}
