@@ -81,26 +81,7 @@ jobs:
           
           # Create basic 404 page if it doesn't exist
           if [ ! -f "dist/404.html" ]; then
-            cat > dist/404.html << 'EOF'
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>Page Not Found</title>
-    <script>
-        // Simple client-side routing for SPA
-        const path = window.location.pathname;
-        if (path !== '/') {
-            window.location.replace('/');
-        }
-    </script>
-</head>
-<body>
-    <h1>Page Not Found</h1>
-    <p>Redirecting to home page...</p>
-</body>
-</html>
-EOF
+            echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Page Not Found</title><script>const path = window.location.pathname; if (path !== "/") { window.location.replace("/"); }</script></head><body><h1>Page Not Found</h1><p>Redirecting to home page...</p></body></html>' > dist/404.html
           fi
 
       - name: Upload artifact
