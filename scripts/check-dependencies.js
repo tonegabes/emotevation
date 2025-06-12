@@ -26,6 +26,39 @@ function log(message, color = colors.reset) {
 
 log('🔍 Checking for dependency conflicts...', colors.cyan);
 
+// Known problematic packages
+const knownIssues = [
+  {
+    name: 'glob',
+    requiredVersion: '^10.3.10',
+    minNodeVersion: 18,
+    maxNodeVersion: 22,
+    checkFunction: (pkg) => {
+      const nodeVersion = process.version.match(/^v(\d+)/)[1];
+      
+      // If the glob version is 11+ and node version is < 20, we need to fix it
+      if (pkg.devDependencies && pkg.devDependencies.glob) {
+        const globVersion = pkg.devDependencies.glob;
+        if (globVersion.startsWith('^11') && parseInt(nodeVersion) < 20) {
+          log(`⚠️ Found incompatible glob ${globVersion} with Node.js ${process.version}`, colors.yellow);
+          return true;
+        }
+      }
+      return false;
+    },
+    fix: () => {
+      try {
+        log('🔧 Downgrading glob to a compatible version...', colors.blue);
+        execSync('npm install glob@10.3.10 --save-dev --no-fund --quiet');
+        return true;
+      } catch (error) {
+        log(`❌ Failed to fix glob version: ${error.message}`, colors.red);
+        return false;
+      }
+    }
+  }
+];
+
 // Read package.json
 let packagePath;
 try {
@@ -63,6 +96,16 @@ if (packageJson.devDependencies && packageJson.devDependencies.eslint) {
     fs.writeFileSync(packagePath, JSON.stringify(packageJson, null, 2));
     
     needsFixing = true;
+  }
+}
+
+// Check for glob compatibility issues
+for (const issue of knownIssues) {
+  if (issue.checkFunction(packageJson)) {
+    log(`🔧 Fixing ${issue.name} dependency...`, colors.green);
+    if (issue.fix()) {
+      needsFixing = true;
+    }
   }
 }
 

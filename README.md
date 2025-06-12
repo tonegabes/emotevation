@@ -29,6 +29,19 @@ The application uses a seeded random number generator to ensure that the same na
 
 ## Getting Started
 
+### Prerequisites
+
+- **Node.js**: Version 20.x or later is recommended (required for some dependencies)
+  - If using an earlier version (e.g., Node.js 18.x), the install script will handle compatibility automatically
+
+If you're using nvm (Node Version Manager), you can simply run:
+
+```bash
+nvm use
+```
+
+This will use the Node.js version specified in the `.nvmrc` file.
+
 First, run the development server:
 
 ```bash
@@ -52,6 +65,32 @@ yarn build
 ```
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Inter](https://fonts.google.com/specimen/Inter) for a great typography experience.
+
+## Troubleshooting
+
+### Dependency Installation Issues
+
+If you encounter issues during dependency installation, you can use the provided installation script:
+
+```bash
+# Make the script executable
+chmod +x install-deps.sh
+
+# Run the installation script
+./install-deps.sh
+```
+
+This script will:
+1. Remove existing node_modules directory
+2. Clean npm cache
+3. Check for Node.js version compatibility
+4. Fix known dependency conflicts (like glob package requiring Node.js 20+)
+5. Try different installation methods automatically
+
+### Common Issues
+
+- **`EBADENGINE` error with glob package**: This happens when using Node.js < 20 with glob v11+. The installation script will automatically downgrade glob to a compatible version.
+- **ESLint conflicts**: The script will fix ESLint version conflicts with Next.js automatically.
 
 ## Learn More
 

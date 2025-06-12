@@ -15,8 +15,14 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '18'
+        node-version: '20'
         cache: 'npm'
+
+    - name: Add npm flags to fix engine warnings
+      run: |
+        echo "Setting npm config to ignore engine warnings..."
+        npm config set engine-strict false
+        npm config set legacy-peer-deps true
 
     - name: Install dependencies with fallback
       id: install-deps
@@ -26,28 +32,12 @@ jobs:
         [ -d "node_modules" ] && rm -rf node_modules
         # Clean npm cache to avoid dependency issues
         npm cache clean --force
-        # Check for package-lock.json version
-        if grep -q "\"lockfileVersion\": 3" package-lock.json; then
-          echo "Using npm version 7+ lock file format"
-        else
-          echo "Warning: package-lock.json might be outdated. Consider regenerating it with npm@7+."
-        fi
-        # Try standard install first
-        npm ci && echo "install_method=npm_ci" >> $GITHUB_OUTPUT || echo "Standard npm ci failed, will try fallback method"
-      continue-on-error: true
-
-    - name: Fallback to npm install if ci failed
-      if: steps.install-deps.outcome == 'failure' || steps.install-deps.outputs.install_method != 'npm_ci'
-      run: |
-        echo "Fallback to npm install..."
-        # Make dependency check script executable
-        chmod +x scripts/check-dependencies.js
         
-        # Run dependency check script
-        node scripts/check-dependencies.js
+        # Make install script executable
+        chmod +x install-deps.sh
         
-        # Install with standard npm install
-        npm install || npm install --legacy-peer-deps
+        # Run the custom install script that handles dependency conflicts
+        ./install-deps.sh
 
     - name: Build
       run: |
@@ -62,9 +52,11 @@ jobs:
         cp public/github-index.html out/index.html
         cp public/404.html out/404.html
         cp public/gh-pages-router.js out/gh-pages-router.js
+        cp public/error-handler.js out/error-handler.js
         
         # Ensure emotevation index.html doesn't redirect to itself
         if [ -d "out/emotevation" ]; then
+          echo "Customizing emotevation/index.html to include error handling"
           cat > out/emotevation/index.html << EOL
 <!DOCTYPE html>
 <html>
@@ -79,6 +71,17 @@ jobs:
   <meta property="og:url" content="https://tonegabes.github.io/emotevation/">
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="summary_large_image">
+  
+  <!-- GitHub Pages router script -->
+  <script src="/emotevation/gh-pages-router.js"></script>
+  <script src="/emotevation/error-handler.js"></script>
+  
+  <!-- Load Next.js scripts -->
+EOL
+          
+          # Run the script to fix HTML paths in the emotevation/index.html file
+          node scripts/fix-html-paths.js
+        fi
   <script src="/emotevation/gh-pages-router.js"></script>
 </head>
 <body>
