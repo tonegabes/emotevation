@@ -68,4 +68,25 @@
     // Trigger routing system
     window.dispatchEvent(new PopStateEvent('popstate'));
   }
+  
+  // Add an error handler for 404 resources
+  window.addEventListener('error', function(event) {
+    if (event.target && (event.target.tagName === 'SCRIPT' || event.target.tagName === 'LINK' || event.target.tagName === 'IMG')) {
+      console.log('Resource failed to load:', event.target.src || event.target.href);
+      
+      // If the resource is from our app but missing, try redirecting to base path
+      const url = event.target.src || event.target.href;
+      if (url && url.includes(window.location.host) && !url.includes('/emotevation/')) {
+        // Add emotevation prefix to relative paths
+        const fixedUrl = url.replace(window.location.origin, window.location.origin + '/emotevation');
+        console.log('Attempting to fix resource URL:', fixedUrl);
+        
+        if (event.target.tagName === 'SCRIPT') {
+          event.target.src = fixedUrl;
+        } else if (event.target.tagName === 'LINK' || event.target.tagName === 'IMG') {
+          event.target.href = fixedUrl;
+        }
+      }
+    }
+  }, true);
 })();
