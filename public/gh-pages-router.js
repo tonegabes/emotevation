@@ -22,5 +22,13 @@ window.onload = function() {
           l.pathname.slice(0, -1) + decoded + l.hash
       );
     }
-  }(window.location))
+  }(window.location));
+  
+  // Add event listener for navigation events to handle client-side routing
+  window.addEventListener('popstate', function(event) {
+    // Let Next.js handle the navigation
+    if (typeof window.__NEXT_DATA__ !== 'undefined') {
+      console.log('Navigation handled by Next.js router');
+    }
+  });
 }

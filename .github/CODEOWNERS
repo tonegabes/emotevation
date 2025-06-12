@@ -1,0 +1,9 @@
+# Overall repository owners
+* @tonegabes
+
+# GitHub Actions workflow files
+/.github/workflows/ @tonegabes
+
+# Core application code
+/app/ @tonegabes
+/public/ @tonegabes

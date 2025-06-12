@@ -1,5 +1,7 @@
 # Emotevation - Daily Motivation Quote Generator
 
+[![Deploy to GitHub Pages](https://github.com/tonegabes/emotevation/actions/workflows/deploy.yml/badge.svg)](https://github.com/tonegabes/emotevation/actions/workflows/deploy.yml)
+
 A beautiful Next.js application that generates personalized motivational quotes based on a user's name and the current date. The application uses a deterministic algorithm to ensure that the same name and date combination always produces the same quote.
 
 ## Features

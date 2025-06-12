@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Exit on error
+set -e
+
+echo "==== Emotevation GitHub Pages Deployment ===="
+echo "Starting deployment process..."
+
 # Build the Next.js app
 echo "Building the Next.js app..."
 NODE_ENV=production npm run build
@@ -39,10 +45,42 @@ if [ -d "out/emotevation" ]; then
 </body>
 </html>
 EOL
+    echo "Created custom index.html in out/emotevation/"
+else
+    echo "Warning: out/emotevation directory not found. This may be expected if the basePath is applied correctly."
+fi
+
+# Check if gh-pages is installed
+if ! npm list -g gh-pages > /dev/null 2>&1; then
+    echo "Installing gh-pages globally..."
+    npm install -g gh-pages
 fi
 
 # Deploy to GitHub Pages
 echo "Deploying to GitHub Pages..."
 npm run deploy
 
-echo "Deployment completed! Your site should be available at: https://tonegabes.github.io/emotevation/"
+# Check deployment status
+if [ $? -eq 0 ]; then
+    echo "✅ Deployment completed successfully!"
+    echo "Your site should be available at: https://tonegabes.github.io/emotevation/"
+    
+    # Open the deployed site if running in an interactive shell
+    if [ -t 1 ]; then
+        read -p "Would you like to open the deployed site? (y/n) " -n 1 -r
+        echo
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+            echo "Opening https://tonegabes.github.io/emotevation/ in your default browser..."
+            if command -v xdg-open > /dev/null; then
+                xdg-open "https://tonegabes.github.io/emotevation/"
+            elif command -v open > /dev/null; then
+                open "https://tonegabes.github.io/emotevation/"
+            else
+                echo "Could not detect a way to open URLs. Please visit https://tonegabes.github.io/emotevation/ manually."
+            fi
+        fi
+    fi
+else
+    echo "❌ Deployment failed. Please check the error messages above."
+    exit 1
+fi
