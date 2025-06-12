@@ -20,6 +20,18 @@ const colors = {
   cyan: '\x1b[36m',
 };
 
+/**
+ * Known problematic dependencies to check for
+ */
+const PROBLEMATIC_DEPS = [
+  {
+    name: 'eslint',
+    correctVersion: '^8.57.0',
+    maxVersion: '9.0.0',
+    message: 'ESLint v9.x is not compatible with eslint-config-next and other plugins.',
+    fix: true
+  },
+
 function log(message, color = colors.reset) {
   console.log(`${color}${message}${colors.reset}`);
 }
