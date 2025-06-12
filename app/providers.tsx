@@ -14,9 +14,16 @@ export function Providers({ children }: { children: React.ReactNode }) {
           richColors 
           closeButton
           expand
+          theme="system"
+          duration={4000}
+          visibleToasts={3}
+          hotkey={['altKey', 'KeyQ']}
           toastOptions={{
             classNames: {
-              toast: "rounded-xl shadow-lg",
+              toast: "rounded-xl shadow-lg backdrop-blur-md",
+              title: "font-medium",
+              description: "text-sm opacity-90",
+              actionButton: "bg-primary-500",
             }
           }}
         />
