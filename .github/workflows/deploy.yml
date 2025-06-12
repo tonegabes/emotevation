@@ -85,18 +85,15 @@ jobs:
   <script src="/emotevation/error-handler.js"></script>
   
   <!-- Load Next.js scripts -->
-EOL
-          
-          # Run the script to fix HTML paths in the emotevation/index.html file
-          node scripts/fix-html-paths.js
-        fi
-  <script src="/emotevation/gh-pages-router.js"></script>
 </head>
 <body>
   <div id="__next"></div>
 </body>
 </html>
 EOL
+          
+          # Run the script to fix HTML paths in the emotevation/index.html file
+          node scripts/fix-html-paths.js
         fi
 
     - name: Upload artifact
