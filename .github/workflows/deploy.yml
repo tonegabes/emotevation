@@ -1,13 +1,18 @@
 name: Deploy to GitHub Pages
 
-# This workflow builds and deploys the Emotevation app to GitHub Pages
-# Fixed on June 11, 2025 to resolve YAML syntax issues with heredoc content
-# Now using file copy instead of inline HTML creation for better YAML compatibility
-
 on:
   push:
     branches: [main]
   workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -22,90 +27,80 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
-      - name: Add npm flags to fix engine warnings
+      - name: Configure npm
         run: |
-          echo "Setting npm config to ignore engine warnings..."
           npm config set engine-strict false
           npm config set legacy-peer-deps true
 
-      - name: Install dependencies with fallback
-        id: install-deps
+      - name: Clean install dependencies
         run: |
-          echo "Installing dependencies with standard approach..."
-          # Remove node_modules if it exists to ensure clean install
-          [ -d "node_modules" ] && rm -rf node_modules
-          # Clean npm cache to avoid dependency issues
+          # Clean installation
+          rm -rf node_modules package-lock.json
           npm cache clean --force
+          npm install --legacy-peer-deps
 
-          # Make install script executable
-          chmod +x install-deps.sh
-          
-          # Try to install dependencies without running the postinstall script first
-          npm install --ignore-scripts || true
-          
-          # Run the custom install script that handles dependency conflicts
-          ./install-deps.sh || {
-            echo "Install script failed, trying manual installation..."
-            npm install --legacy-peer-deps
-          }
-          
-      # Fix ESLint version compatibility issues    
-      - name: Fix ESLint dependencies
+      - name: Build application
         run: |
-          echo "Fixing ESLint version compatibility issues..."
-          # Run the simplified dependency check as a backup
-          chmod +x scripts/simple-dependency-check.js
-          node scripts/simple-dependency-check.js
+          # Set environment variables for build
+          export NODE_OPTIONS="--max_old_space_size=4096"
+          export CI=false
           
-          # Directly install the correct ESLint version
-          npm uninstall eslint --quiet || true
-          npm install eslint@8.57.0 --save-dev --no-save
-          
-          # Check if we have the right ESLint version now
-          npm list eslint
-
-      - name: Build
-        run: |
-          # Show ESLint version for debugging
-          echo "Checking installed ESLint version:"
-          npm list eslint
-          
-          # Create a barebones .eslintrc.json if needed
-          if [ ! -f ".eslintrc.json" ] && [ ! -f ".eslintrc.js" ]; then
-            echo "Creating minimal .eslintrc.json for safety..."
-            echo '{"extends": "next/core-web-vitals"}' > .eslintrc.json
+          # Create basic eslint config if it doesn't exist
+          if [ ! -f ".eslintrc.json" ] && [ ! -f ".eslintrc.js" ] && [ ! -f "eslint.config.js" ]; then
+            echo '{"extends": ["next/core-web-vitals"]}' > .eslintrc.json
           fi
           
-          # Make build script executable
-          chmod +x build-no-lint.sh
-          
-          # Build with ESLint disabled and with increased Node.js memory
-          GITHUB_ACTIONS=true NODE_OPTIONS=--max_old_space_size=4096 ./build-no-lint.sh || {
-            echo "Build failed, checking for ESLint issues..."
-            # If build fails, try with a more compatible ESLint setup
-            npm uninstall eslint eslint-config-next
-            npm install eslint@8.57.0 eslint-config-next@14.0.4 --save-dev
-            GITHUB_ACTIONS=true NODE_OPTIONS=--max_old_space_size=4096 ./build-no-lint.sh
-          }
+          # Build the application
+          npm run build
 
       - name: Prepare for GitHub Pages
         run: |
-          # Ensure .nojekyll file exists
+          # Create dist directory if it doesn't exist
+          mkdir -p dist
+          
+          # Copy build output (adjust based on your build output directory)
+          if [ -d "build" ]; then
+            cp -r build/* dist/
+          elif [ -d "out" ]; then
+            cp -r out/* dist/
+          elif [ -d ".next" ]; then
+            # For Next.js static export
+            if [ -d ".next/out" ]; then
+              cp -r .next/out/* dist/
+            else
+              echo "Error: Next.js build found but no static export. Make sure you have 'output: export' in next.config.js"
+              exit 1
+            fi
+          else
+            echo "Error: No build output directory found (build, out, or .next/out)"
+            exit 1
+          fi
+          
+          # Create .nojekyll file for GitHub Pages
           touch dist/.nojekyll
-
-          # Copy GitHub Pages routing files
-          cp public/github-index.html dist/index.html
-          cp public/404.html dist/404.html
-          cp public/gh-pages-router.js dist/gh-pages-router.js
-          cp public/error-handler.js dist/error-handler.js
-
-          # Ensure emotevation index.html doesn't redirect to itself
-          if [ -d "dist/emotevation" ]; then
-            echo "Customizing emotevation/index.html to include error handling"
-            cp public/404-emotevation.html dist/emotevation/index.html
-
-            # Run the script to fix HTML paths in the emotevation/index.html file
-            node scripts/fix-html-paths.js
+          
+          # Create basic 404 page if it doesn't exist
+          if [ ! -f "dist/404.html" ]; then
+            cat > dist/404.html << 'EOF'
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Page Not Found</title>
+    <script>
+        // Simple client-side routing for SPA
+        const path = window.location.pathname;
+        if (path !== '/') {
+            window.location.replace('/');
+        }
+    </script>
+</head>
+<body>
+    <h1>Page Not Found</h1>
+    <p>Redirecting to home page...</p>
+</body>
+</html>
+EOF
           fi
 
       - name: Upload artifact
@@ -116,15 +111,9 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
-
-    permissions:
-      pages: write
-      id-token: write
-
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
