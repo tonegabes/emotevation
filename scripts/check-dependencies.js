@@ -30,7 +30,8 @@ const PROBLEMATIC_DEPS = [
     maxVersion: '9.0.0',
     message: 'ESLint v9.x is not compatible with eslint-config-next and other plugins.',
     fix: true
-  },
+  }
+];
 
 function log(message, color = colors.reset) {
   console.log(`${color}${message}${colors.reset}`);
@@ -93,7 +94,27 @@ try {
   process.exit(0);
 }
 
-// Check for ESLint conflicts
+// Check for issues in PROBLEMATIC_DEPS first
+for (const dep of PROBLEMATIC_DEPS) {
+  if (packageJson.devDependencies && packageJson.devDependencies[dep.name]) {
+    const currentVersion = packageJson.devDependencies[dep.name];
+    // Check if we need to fix this dependency
+    if (currentVersion.startsWith('^9') || currentVersion.startsWith('9')) {
+      log(`⚠️ Found problematic ${dep.name} version ${currentVersion}: ${dep.message}`, colors.yellow);
+      if (dep.fix) {
+        try {
+          log(`🔧 Installing compatible ${dep.name}@${dep.correctVersion}...`, colors.blue);
+          execSync(`npm install ${dep.name}@${dep.correctVersion} --save-dev --no-fund --quiet`);
+          log(`✅ Fixed ${dep.name} version`, colors.green);
+        } catch (error) {
+          log(`❌ Failed to fix ${dep.name} version: ${error.message}`, colors.red);
+        }
+      }
+    }
+  }
+}
+
+// Check for ESLint conflicts (legacy code)
 let needsFixing = false;
 if (packageJson.devDependencies && packageJson.devDependencies.eslint) {
   const eslintVersion = packageJson.devDependencies.eslint;

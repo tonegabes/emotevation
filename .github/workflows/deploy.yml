@@ -39,16 +39,27 @@ jobs:
 
           # Make install script executable
           chmod +x install-deps.sh
-
+          
+          # Try to install dependencies without running the postinstall script first
+          npm install --ignore-scripts || true
+          
           # Run the custom install script that handles dependency conflicts
-          ./install-deps.sh
+          ./install-deps.sh || {
+            echo "Install script failed, trying manual installation..."
+            npm install --legacy-peer-deps
+          }
           
       # Fix ESLint version compatibility issues    
       - name: Fix ESLint dependencies
         run: |
           echo "Fixing ESLint version compatibility issues..."
-          npm uninstall eslint
-          npm install eslint@8.57.0 --save-dev
+          # Run the simplified dependency check as a backup
+          chmod +x scripts/simple-dependency-check.js
+          node scripts/simple-dependency-check.js
+          
+          # Directly install the correct ESLint version
+          npm uninstall eslint --quiet || true
+          npm install eslint@8.57.0 --save-dev --no-save
           
           # Check if we have the right ESLint version now
           npm list eslint
@@ -58,6 +69,12 @@ jobs:
           # Show ESLint version for debugging
           echo "Checking installed ESLint version:"
           npm list eslint
+          
+          # Create a barebones .eslintrc.json if needed
+          if [ ! -f ".eslintrc.json" ] && [ ! -f ".eslintrc.js" ]; then
+            echo "Creating minimal .eslintrc.json for safety..."
+            echo '{"extends": "next/core-web-vitals"}' > .eslintrc.json
+          fi
           
           # Make build script executable
           chmod +x build-no-lint.sh

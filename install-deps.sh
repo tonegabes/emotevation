@@ -27,10 +27,16 @@ if [ "$NODE_VERSION" -lt "20" ]; then
   npm install glob@10.3.10 --save-dev --no-fund --no-audit || true
 fi
 
-# Run dependency check script
+# Handle ESLint version to be compatible with eslint-config-next
+echo "Ensuring compatible ESLint version..."
+npm install eslint@8.57.0 --save-dev --no-fund --no-audit || true
+
+# Run dependency check script (with error handling)
 echo "Checking for dependency conflicts..."
 chmod +x scripts/check-dependencies.js
-node scripts/check-dependencies.js
+node scripts/check-dependencies.js || {
+  echo "Warning: Dependency check script failed, continuing with installation..."
+}
 
 # Try normal install first
 echo "Installing dependencies with npm ci..."
