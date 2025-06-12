@@ -22,6 +22,10 @@ touch out/.nojekyll
 echo "Copying routing files for GitHub Pages..."
 cp public/404.html out/404.html
 cp public/gh-pages-router.js out/gh-pages-router.js
+cp public/error-handler.js out/error-handler.js
+
+# Create a simplified index.html in the root
+cp public/index.html out/index.html
 
 # Run the script to fix HTML paths
 echo "Fixing HTML paths for Next.js scripts..."

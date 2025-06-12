@@ -34,6 +34,9 @@ const appJsFiles = glob.sync(path.join(nextStaticDir, 'chunks/pages/_app-*.js'))
 const frameworkJsFiles = glob.sync(path.join(nextStaticDir, 'chunks/framework-*.js'));
 const webpackJsFiles = glob.sync(path.join(nextStaticDir, 'chunks/webpack-*.js'));
 const cssFiles = glob.sync(path.join(nextStaticDir, 'css/*/app/layout.css'));
+const errorJsFiles = glob.sync(path.join(nextStaticDir, 'chunks/pages/_error-*.js'));
+const appErrorJsFiles = glob.sync(path.join(nextStaticDir, 'chunks/app/error-*.js'));
+const appGlobalErrorJsFiles = glob.sync(path.join(nextStaticDir, 'chunks/app/global-error-*.js'));
 
 // Create script paths relative to emotevation directory
 const scriptPaths = {
@@ -42,7 +45,10 @@ const scriptPaths = {
   app: appJsFiles.length > 0 ? `/emotevation/_next/static/chunks/pages/${path.basename(appJsFiles[0])}` : null,
   framework: frameworkJsFiles.length > 0 ? `/emotevation/_next/static/chunks/${path.basename(frameworkJsFiles[0])}` : null,
   webpack: webpackJsFiles.length > 0 ? `/emotevation/_next/static/chunks/${path.basename(webpackJsFiles[0])}` : null,
-  css: cssFiles.length > 0 ? `/emotevation/_next/static/css/${path.basename(path.dirname(cssFiles[0]))}/app/layout.css` : null
+  css: cssFiles.length > 0 ? `/emotevation/_next/static/css/${path.basename(path.dirname(cssFiles[0]))}/app/layout.css` : null,
+  error: errorJsFiles.length > 0 ? `/emotevation/_next/static/chunks/pages/${path.basename(errorJsFiles[0])}` : null,
+  appError: appErrorJsFiles.length > 0 ? `/emotevation/_next/static/chunks/app/${path.basename(appErrorJsFiles[0])}` : null,
+  globalError: appGlobalErrorJsFiles.length > 0 ? `/emotevation/_next/static/chunks/app/${path.basename(appGlobalErrorJsFiles[0])}` : null
 };
 
 console.log('Found script paths:', scriptPaths);
@@ -64,6 +70,7 @@ const htmlContent = `<!DOCTYPE html>
   
   <!-- GitHub Pages router script -->
   <script src="/emotevation/gh-pages-router.js"></script>
+  <script src="/emotevation/error-handler.js"></script>
   
   ${scriptPaths.css ? `<link rel="stylesheet" href="${scriptPaths.css}">` : ''}
 </head>
@@ -88,6 +95,9 @@ const htmlContent = `<!DOCTYPE html>
   ${scriptPaths.main ? `<script src="${scriptPaths.main}" defer></script>` : ''}
   ${scriptPaths.app ? `<script src="${scriptPaths.app}" defer></script>` : ''}
   ${scriptPaths.pages ? `<script src="${scriptPaths.pages}" defer></script>` : ''}
+  ${scriptPaths.error ? `<script src="${scriptPaths.error}" defer></script>` : ''}
+  ${scriptPaths.appError ? `<script src="${scriptPaths.appError}" defer></script>` : ''}
+  ${scriptPaths.globalError ? `<script src="${scriptPaths.globalError}" defer></script>` : ''}
 </body>
 </html>`;
 
@@ -103,8 +113,17 @@ const rootIndexContent = `<!DOCTYPE html>
   <meta charset="utf-8">
   <title>Emotevation - Personalized Daily Motivation</title>
   <meta http-equiv="refresh" content="0;url=/emotevation/">
+  <script src="/emotevation/error-handler.js"></script>
   <script>
-    window.location.href = "/emotevation/";
+    // Check for missing error components message
+    if (document.body && document.body.innerText && 
+        (document.body.innerText.includes('missing required error components') || 
+         document.body.innerText.includes('refreshing'))) {
+      console.log("Detected error components issue, forcing refresh to emotevation path");
+      window.location.href = "/emotevation/";
+    } else {
+      window.location.href = "/emotevation/";
+    }
   </script>
   <style>
     body {

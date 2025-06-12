@@ -63,45 +63,48 @@ export default function Home() {
     icon: '',
     level: 'bronze' as 'bronze' | 'silver' | 'gold'
   });
+  const [errorState, setErrorState] = useState<Error | null>(null);
   const inputNameRef = useRef<HTMLInputElement>(null);
 
+  // Add error boundary handling
   useEffect(() => {
-    // Set the current date on component mount
-    const today = new Date();
-    setCurrentDate(formatDate(today));
-    
-    // Load quote history from localStorage
-    const savedHistory = localStorage.getItem('quoteHistory');
-    if (savedHistory) {
-      try {
-        const parsedHistory = JSON.parse(savedHistory);
-        if (Array.isArray(parsedHistory)) {
-          setQuoteHistory(parsedHistory);
+    // Handle any initialization errors
+    try {
+      // Set the current date on component mount
+      const today = new Date();
+      setCurrentDate(formatDate(today));
+      
+      // Load quote history from localStorage
+      const savedHistory = localStorage.getItem('quoteHistory');
+      if (savedHistory) {
+        try {
+          const parsedHistory = JSON.parse(savedHistory);
+          if (Array.isArray(parsedHistory)) {
+            setQuoteHistory(parsedHistory);
+          }
+        } catch (error) {
+          console.error('Error parsing quote history:', error);
         }
-      } catch (error) {
-        console.error('Error parsing quote history:', error);
       }
-    }
-    
-    // Focus the name input on initial load for better UX
-    if (inputNameRef.current) {
-      inputNameRef.current.focus();
-    }
-    
-    // Check if this is the first visit
-    const hasVisitedBefore = localStorage.getItem('hasVisitedBefore');
-    if (!hasVisitedBefore) {
-      // Show the help modal on first visit after a short delay
+      
+      // Check if this is the first visit
+      const hasVisitedBefore = localStorage.getItem('hasVisitedBefore');
+      if (!hasVisitedBefore) {
+        // Show the help modal on first visit after a short delay
+        setTimeout(() => {
+          setShowHelpModal(true);
+          localStorage.setItem('hasVisitedBefore', 'true');
+        }, 1500);
+      }
+      
+      // Set first load to false after 3 seconds
       setTimeout(() => {
-        setShowHelpModal(true);
-        localStorage.setItem('hasVisitedBefore', 'true');
-      }, 1500);
+        setFirstLoad(false);
+      }, 3000);
+    } catch (error) {
+      console.error('Error during initialization:', error);
+      setErrorState(error as Error);
     }
-    
-    // Set first load to false after 3 seconds
-    setTimeout(() => {
-      setFirstLoad(false);
-    }, 3000);
   }, []);
 
   useEffect(() => {
@@ -352,6 +355,26 @@ export default function Home() {
       onSwipeRight={handleSwipeRight}
       className="min-h-screen flex flex-col bg-background dark:bg-[#13151a] relative overflow-hidden"
     >
+      {/* Handle error state */}
+      {errorState && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background dark:bg-[#13151a] bg-opacity-90 dark:bg-opacity-90">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 m-4 max-w-md w-full">
+            <h2 className="text-2xl font-bold text-pink-600 mb-4">Something went wrong</h2>
+            <p className="text-gray-700 dark:text-gray-300 mb-4">
+              We encountered an error while loading the application. Please try refreshing the page.
+            </p>
+            <div className="flex justify-end">
+              <Button 
+                color="secondary" 
+                onClick={() => window.location.reload()}
+              >
+                Refresh Page
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+      
       {/* Screen reader announcements */}
       {screenReaderMessage && (
         <ScreenReaderAnnouncement message={screenReaderMessage} />
