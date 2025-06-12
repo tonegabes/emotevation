@@ -6,6 +6,10 @@ set -e
 echo "==== Emotevation GitHub Pages Deployment ===="
 echo "Starting deployment process..."
 
+# Clean previous builds
+echo "Cleaning previous builds..."
+rm -rf out
+
 # Build the Next.js app
 echo "Building the Next.js app..."
 NODE_ENV=production npm run build
@@ -16,49 +20,32 @@ touch out/.nojekyll
 
 # Copy GitHub Pages routing files
 echo "Copying routing files for GitHub Pages..."
-cp public/github-index.html out/index.html
 cp public/404.html out/404.html
 cp public/gh-pages-router.js out/gh-pages-router.js
 
-# Ensure emotevation index.html doesn't redirect to itself
-echo "Ensuring proper redirections..."
-if [ -d "out/emotevation" ]; then
-    # Make sure there's no redirect loop in the emotevation directory
-    cat > out/emotevation/index.html << EOL
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>Emotevation - Personalized Daily Motivation</title>
-  <meta name="description" content="Get personalized motivational quotes or reality checks based on your name and date. Every combination creates a unique result to inspire your day.">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta property="og:title" content="Emotevation - Personalized Daily Motivation">
-  <meta property="og:description" content="Get personalized motivational quotes or reality checks based on your name and date.">
-  <meta property="og:image" content="https://tonegabes.github.io/emotevation/opengraph-image.png">
-  <meta property="og:url" content="https://tonegabes.github.io/emotevation/">
-  <meta property="og:type" content="website">
-  <meta name="twitter:card" content="summary_large_image">
-  <script src="/emotevation/gh-pages-router.js"></script>
-</head>
-<body>
-  <div id="__next"></div>
-</body>
-</html>
-EOL
-    echo "Created custom index.html in out/emotevation/"
-else
-    echo "Warning: out/emotevation directory not found. This may be expected if the basePath is applied correctly."
-fi
+# Run the script to fix HTML paths
+echo "Fixing HTML paths for Next.js scripts..."
+node scripts/fix-html-paths.js
 
-# Check if gh-pages is installed
-if ! npm list -g gh-pages > /dev/null 2>&1; then
-    echo "Installing gh-pages globally..."
-    npm install -g gh-pages
+# Create the emotevation directory if it doesn't exist
+mkdir -p out/emotevation
+
+# Copy the special 404 file for the emotevation directory
+echo "Adding special 404 handling for client-side routing..."
+cp public/404-emotevation.html out/emotevation/404.html
+
+# Create a CNAME file if you have a custom domain
+# echo "yourdomain.com" > out/CNAME
+
+# Ensure gh-pages is installed locally
+if ! npm list gh-pages > /dev/null 2>&1; then
+    echo "Installing gh-pages locally..."
+    npm install --save-dev gh-pages
 fi
 
 # Deploy to GitHub Pages
 echo "Deploying to GitHub Pages..."
-npm run deploy
+npx gh-pages -d out
 
 # Check deployment status
 if [ $? -eq 0 ]; then

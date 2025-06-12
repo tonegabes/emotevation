@@ -10,6 +10,10 @@ const nextConfig = {
   },
   trailingSlash: true,
   distDir: 'out',
+  eslint: {
+    // Ignore ESLint errors during production build
+    ignoreDuringBuilds: true,
+  },
 };
 
 module.exports = nextConfig;

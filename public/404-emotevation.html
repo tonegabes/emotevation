@@ -5,18 +5,20 @@
   <title>Emotevation - Personalized Daily Motivation</title>
   <meta name="description" content="Get personalized motivational quotes or reality checks based on your name and date. Every combination creates a unique result to inspire your day.">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta property="og:title" content="Emotevation - Personalized Daily Motivation">
-  <meta property="og:description" content="Get personalized motivational quotes or reality checks based on your name and date.">
-  <meta property="og:image" content="https://tonegabes.github.io/emotevation/opengraph-image.png">
-  <meta property="og:url" content="https://tonegabes.github.io/emotevation/">
-  <meta property="og:type" content="website">
-  <meta name="twitter:card" content="summary_large_image">
-  <!-- Redirect script for GitHub Pages -->
   <script>
-    // Redirect to the correct path with the basePath
-    var redirectPath = '/emotevation/';
-    if (window.location.pathname === '/' || window.location.pathname === '/index.html') {
-      window.location.replace(redirectPath);
+    // This is a special 404 file for the /emotevation/ path
+    // It will redirect to the main app while preserving the URL for client-side routing
+    
+    // Get the current path
+    const path = window.location.pathname;
+    const pathWithoutBase = path.replace('/emotevation', '');
+    
+    if (pathWithoutBase !== '') {
+      // We're dealing with a client-side route, redirect to the base and let Next.js handle it
+      window.location.href = '/emotevation/';
+    } else {
+      // We're at the /emotevation/ path but got a 404, just reload the main page
+      window.location.href = '/emotevation/';
     }
   </script>
   <style>
@@ -31,6 +33,7 @@
       background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
       color: #333;
       text-align: center;
+      padding: 20px;
     }
     .loader {
       border: 5px solid #f3f3f3;
@@ -65,7 +68,7 @@
 <body>
   <div class="loader"></div>
   <h1>Loading Emotevation...</h1>
-  <p>Your personalized motivation quote generator is loading</p>
+  <p>Redirecting to the correct page</p>
   <a href="/emotevation/">Click here if you are not redirected automatically</a>
 </body>
 </html>

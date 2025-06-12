@@ -2,7 +2,7 @@
 // It will be added to the index.html during build
 // Adapted from https://github.com/rafgraph/spa-github-pages
 
-window.onload = function() {
+(function() {
   // Single Page Apps for GitHub Pages
   // MIT License
   // https://github.com/rafgraph/spa-github-pages
@@ -24,11 +24,48 @@ window.onload = function() {
     }
   }(window.location));
   
-  // Add event listener for navigation events to handle client-side routing
-  window.addEventListener('popstate', function(event) {
-    // Let Next.js handle the navigation
-    if (typeof window.__NEXT_DATA__ !== 'undefined') {
-      console.log('Navigation handled by Next.js router');
+  // This ensures that all internal links on the GitHub Pages site work correctly
+  document.addEventListener('click', function(event) {
+    // Find closest anchor element
+    let anchor = event.target.closest('a');
+    
+    // If it's not an anchor or it's an external link, don't handle it
+    if (!anchor || anchor.target === '_blank' || anchor.hasAttribute('download') || 
+        anchor.getAttribute('rel') === 'external') {
+      return;
+    }
+    
+    let href = anchor.getAttribute('href');
+    
+    // If it's a relative link within our app
+    if (href && href.startsWith('/') && !href.startsWith('//') && !href.startsWith('/emotevation/api/')) {
+      // Prevent default behavior
+      event.preventDefault();
+      
+      // Make sure the link starts with /emotevation
+      if (!href.startsWith('/emotevation')) {
+        href = '/emotevation' + href;
+      }
+      
+      // Use pushState to change the URL
+      history.pushState(null, null, href);
+      
+      // Create a navigation event for Next.js router
+      window.dispatchEvent(new PopStateEvent('popstate'));
+      
+      return false;
     }
   });
-}
+  
+  // Ensure popstate events are properly handled
+  window.addEventListener('popstate', function(event) {
+    // We don't need any special handling here as Next.js will react to the popstate event
+    console.log('Navigation event handled by the router');
+  });
+  
+  // If we loaded on a path other than the root, ensure Next.js router gets triggered
+  if (window.location.pathname !== '/' && window.location.pathname !== '/emotevation/') {
+    // Trigger routing system
+    window.dispatchEvent(new PopStateEvent('popstate'));
+  }
+})();

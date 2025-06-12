@@ -121,19 +121,37 @@ GitHub Pages doesn't natively support client-side routing used by Single Page Ap
 
 ### Common Issues:
 
-1. **Blank Page**: If you see a blank page after deployment, check the browser console for errors. This often indicates an issue with the base path or asset prefix.
+1. **Stuck on Loading Screen**: If you see a "Loading the Emotevation app..." message without redirecting, this indicates that the routing script isn't running properly:
+   - Clear your browser cache completely
+   - Check that all the routing files (`gh-pages-router.js`, `404.html`) are present in the deployed site
+   - Verify that the paths to Next.js scripts in the HTML files are correct
+   - Try directly accessing `https://[username].github.io/emotevation/` (with the trailing slash)
 
-2. **Missing Assets**: If assets (CSS, JavaScript) are not loading, check that the `assetPrefix` in `next.config.js` is set correctly.
+2. **Blank Page**: If you see a blank page after deployment, check the browser console for errors. This often indicates an issue with the base path or asset prefix.
 
-3. **404 Errors on Routes**: Make sure the gh-pages-router.js is included and working correctly.
+3. **Missing Assets**: If assets (CSS, JavaScript) are not loading, check that the `assetPrefix` in `next.config.js` is set correctly.
 
-4. **GitHub Actions Failures**: Check the workflow logs in the "Actions" tab of your GitHub repository.
+4. **404 Errors on Routes**: Make sure the gh-pages-router.js is included and working correctly.
 
-5. **Dependency Conflicts**: If you encounter errors like `npm error code ERESOLVE` or conflicts with ESLint:
+5. **GitHub Actions Failures**: Check the workflow logs in the "Actions" tab of your GitHub repository.
+
+6. **Dependency Conflicts**: If you encounter errors like `npm error code ERESOLVE` or conflicts with ESLint:
    - Try running `npm run reinstall` to fix dependency issues
    - For ESLint conflicts, ensure you're using version 8.x with `npm install eslint@8.57.0 --save-dev`
    - Use `npm install --legacy-peer-deps` only as a last resort as it may lead to incompatible packages
    - Check that your package-lock.json is up-to-date with `npm install --package-lock-only`
+
+## Recent Improvements
+
+We've made several improvements to the GitHub Pages deployment:
+
+1. **Enhanced HTML file generation**: The `scripts/fix-html-paths.js` script now dynamically finds and includes the correct Next.js script paths in the HTML files.
+
+2. **Better loading experience**: Added a styled loading spinner while the app is initializing.
+
+3. **Improved error handling**: Special 404 handling for the `/emotevation/` path to ensure better client-side routing.
+
+4. **Optimized deployment script**: The `deploy-gh-pages.sh` script now uses the locally installed gh-pages package instead of requiring global installation.
 
 ## Additional Resources
 

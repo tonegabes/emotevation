@@ -20,6 +20,12 @@
   <meta name="twitter:description" content="Get personalized motivational quotes or reality checks based on your name and date.">
   <meta name="twitter:image" content="https://tonegabes.github.io/emotevation/opengraph-image.png">
   
+  <!-- Load the Next.js pre-rendered files -->
+  <link rel="stylesheet" href="/emotevation/_next/static/css/app/layout.css">
+  
+  <!-- GitHub Pages router script -->
+  <script src="/emotevation/gh-pages-router.js"></script>
+  
   <script>
     // Single Page Apps for GitHub Pages
     // https://github.com/rafgraph/spa-github-pages
@@ -37,7 +43,14 @@
   </script>
 </head>
 <body>
-  <div id="__next"></div>
-  <!-- This is the base index.html for GitHub Pages deployment -->
+  <div id="__next">
+    <!-- The Next.js app will be mounted here -->
+  </div>
+  
+  <!-- Load Next.js scripts -->
+  <script src="/emotevation/_next/static/chunks/webpack.js" defer></script>
+  <script src="/emotevation/_next/static/chunks/main.js" defer></script>
+  <script src="/emotevation/_next/static/chunks/pages/_app.js" defer></script>
+  <script src="/emotevation/_next/static/chunks/pages/index.js" defer></script>
 </body>
 </html>
