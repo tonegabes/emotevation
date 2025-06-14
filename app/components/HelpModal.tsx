@@ -1,8 +1,8 @@
 "use client";
 
-import React from 'react';
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, Accordion, AccordionItem } from "@nextui-org/react";
+import { Accordion, AccordionItem, Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/react";
 import { motion } from "framer-motion";
+import React from 'react';
 
 interface HelpModalProps {
   isVisible: boolean;
@@ -11,8 +11,8 @@ interface HelpModalProps {
 
 const HelpModal: React.FC<HelpModalProps> = ({ isVisible, onClose }) => {
   return (
-    <Modal 
-      isOpen={isVisible} 
+    <Modal
+      isOpen={isVisible}
       onClose={onClose}
       placement="center"
       backdrop="blur"
@@ -53,21 +53,9 @@ const HelpModal: React.FC<HelpModalProps> = ({ isVisible, onClose }) => {
                       <li>Enter your name in the input field</li>
                       <li>Select a date (defaults to today)</li>
                       <li>Choose between "Motivational" or "Reality Check" quotes</li>
-                      <li>Click "Generate Quote" or press Ctrl+Enter</li>
+                      <li>Click "Generate Quote"</li>
                     </ol>
                     <p className="mt-2">Your personalized quote will appear below, generated uniquely based on your name and the selected date.</p>
-                  </div>
-                </AccordionItem>
-                <AccordionItem key="2" title="Keyboard Shortcuts" aria-label="Keyboard Shortcuts">
-                  <div className="space-y-2 text-sm">
-                    <p>Emotevation supports several keyboard shortcuts:</p>
-                    <ul className="list-disc pl-5 space-y-1">
-                      <li><strong>Ctrl+Enter</strong>: Generate a new quote</li>
-                      <li><strong>Ctrl+S</strong>: Share the current quote</li>
-                      <li><strong>Ctrl+C</strong>: Copy the quote (when focused on the quote)</li>
-                      <li><strong>Ctrl+H</strong>: Toggle quote history</li>
-                      <li><strong>Ctrl+K</strong>: Show all keyboard shortcuts</li>
-                    </ul>
                   </div>
                 </AccordionItem>
                 <AccordionItem key="3" title="Mobile Features" aria-label="Mobile Features">

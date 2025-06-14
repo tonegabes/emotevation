@@ -1,35 +1,33 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { 
-  Input, 
-  Button, 
-  Card, 
-  CardBody, 
-  Spinner, 
-  Tabs, 
-  Tab,
+import {
+  Button,
+  Card,
+  CardBody,
   Divider,
-  Tooltip,
-  Kbd
+  Input,
+  Spinner,
+  Tab,
+  Tabs,
+  Tooltip
 } from "@nextui-org/react";
+import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useRef, useState } from 'react';
 import { toast } from "sonner";
 import { v4 as uuidv4 } from 'uuid';
+import AchievementModal from './components/AchievementModal';
+import Footer from './components/Footer';
+import HelpModal from './components/HelpModal';
+import { ShareIcon } from './components/Icons';
+import AppNavbar from './components/Navbar';
+import QuickTipsButton from './components/QuickTipsButton';
 import QuoteCard from './components/QuoteCard';
 import QuoteCardSkeleton from './components/QuoteCardSkeleton';
 import QuoteHistory from './components/QuoteHistory';
-import AppNavbar from './components/Navbar';
-import Footer from './components/Footer';
-import KeyboardShortcuts from './components/KeyboardShortcuts';
+import QuoteShareOptions from './components/QuoteShareOptions';
 import ScreenReaderAnnouncement from './components/ScreenReaderAnnouncement';
 import SwipeHandler from './components/SwipeHandler';
-import QuickTipsButton from './components/QuickTipsButton';
-import QuoteShareOptions from './components/QuoteShareOptions';
-import HelpModal from './components/HelpModal';
-import AchievementModal from './components/AchievementModal';
-import { ShareIcon } from './components/Icons';
-import { generateQuote, formatDate } from './utils/quoteGenerator';
-import { motion, AnimatePresence } from "framer-motion";
+import { formatDate, generateQuote } from './utils/quoteGenerator';
 
 interface HistoryQuote {
   id: string;
@@ -50,7 +48,6 @@ export default function Home() {
   const [selected, setSelected] = useState("motivational");
   const [quoteHistory, setQuoteHistory] = useState<HistoryQuote[]>([]);
   const [showHistory, setShowHistory] = useState(false);
-  const [showKeyboardShortcuts, setShowKeyboardShortcuts] = useState(false);
   const [showSkeleton, setShowSkeleton] = useState(false);
   const [screenReaderMessage, setScreenReaderMessage] = useState("");
   const [showShareOptions, setShowShareOptions] = useState(false);
@@ -73,7 +70,7 @@ export default function Home() {
       // Set the current date on component mount
       const today = new Date();
       setCurrentDate(formatDate(today));
-      
+
       // Load quote history from localStorage
       const savedHistory = localStorage.getItem('quoteHistory');
       if (savedHistory) {
@@ -86,7 +83,7 @@ export default function Home() {
           console.error('Error parsing quote history:', error);
         }
       }
-      
+
       // Check if this is the first visit
       const hasVisitedBefore = localStorage.getItem('hasVisitedBefore');
       if (!hasVisitedBefore) {
@@ -96,7 +93,7 @@ export default function Home() {
           localStorage.setItem('hasVisitedBefore', 'true');
         }, 1500);
       }
-      
+
       // Set first load to false after 3 seconds
       setTimeout(() => {
         setFirstLoad(false);
@@ -110,7 +107,7 @@ export default function Home() {
   useEffect(() => {
     setIsUnmotivational(selected === "unmotivational");
   }, [selected]);
-  
+
   useEffect(() => {
     // Save quote history to localStorage when it changes
     if (quoteHistory.length > 0) {
@@ -120,25 +117,25 @@ export default function Home() {
 
   const handleGenerateQuote = () => {
     if (name.trim() === "") return;
-    
+
     setIsGenerating(true);
     setShowSkeleton(true);
-    
+
     // Hide history when generating a new quote
     if (showHistory) {
       setShowHistory(false);
     }
-    
+
     // Simulate loading for better UX
     setTimeout(() => {
       const result = generateQuote(name, currentDate, isUnmotivational);
       setQuote(result.text);
       setHasGenerated(true);
       setShowSkeleton(false);
-      
+
       // Set screen reader announcement
       setScreenReaderMessage(`Quote generated for ${name}: ${result.text}`);
-      
+
       // Add quote to history
       const newQuoteRecord: HistoryQuote = {
         id: uuidv4(),
@@ -148,34 +145,34 @@ export default function Home() {
         isUnmotivational,
         timestamp: Date.now()
       };
-      
+
       // Add to beginning of history array and keep only the latest 10 quotes
       setQuoteHistory(prevHistory => {
         const newHistory = [newQuoteRecord, ...prevHistory].slice(0, 10);
-        
+
         // Check for achievements
         checkForAchievements(newHistory.length);
-        
+
         return newHistory;
       });
-      
+
       setIsGenerating(false);
-      
+
       toast.success('Quote generated!', {
         description: isUnmotivational ? 'Your reality check is ready' : 'Your motivational quote is ready',
         duration: 3000,
       });
     }, 600);
   };
-  
+
   // Check for achievements based on number of quotes generated
   const checkForAchievements = (quoteCount: number) => {
     // Only show one achievement at a time
     let achievementUnlocked = false;
-    
+
     // Get previously unlocked achievements
     const unlockedAchievements = JSON.parse(localStorage.getItem('unlockedAchievements') || '[]');
-    
+
     // First quote achievement
     if (quoteCount === 1 && !unlockedAchievements.includes('first_quote')) {
       setCurrentAchievement({
@@ -209,11 +206,11 @@ export default function Home() {
       achievementUnlocked = true;
       unlockedAchievements.push('quote_enthusiast');
     }
-    
+
     // If an achievement was unlocked, save and show it
     if (achievementUnlocked) {
       localStorage.setItem('unlockedAchievements', JSON.stringify(unlockedAchievements));
-      
+
       // Delay showing the achievement until after the quote is displayed
       setTimeout(() => {
         setShowAchievement(true);
@@ -223,10 +220,10 @@ export default function Home() {
 
   const shareQuote = async () => {
     if (!quote) return;
-    
+
     // Open the share options modal
     setShowShareOptions(true);
-    
+
     // Log sharing attempt
     try {
       // Analytics could be added here
@@ -235,7 +232,7 @@ export default function Home() {
       console.error('Error logging share event:', error);
     }
   };
-  
+
   const handleClearHistory = () => {
     setQuoteHistory([]);
     localStorage.removeItem('quoteHistory');
@@ -243,7 +240,7 @@ export default function Home() {
       description: 'All your quote history has been removed',
     });
   };
-  
+
   const handleSelectHistoryQuote = (historyItem: HistoryQuote) => {
     setName(historyItem.name);
     setCurrentDate(historyItem.date);
@@ -252,7 +249,7 @@ export default function Home() {
     setSelected(historyItem.isUnmotivational ? "unmotivational" : "motivational");
     setHasGenerated(true);
     setShowHistory(false);
-    
+
     toast.info('Historical quote loaded', {
       description: `Quote from ${historyItem.date} restored`,
     });
@@ -274,68 +271,6 @@ export default function Home() {
       });
   };
 
-  // Handle keyboard shortcuts
-  const handleKeyboardShortcuts = useCallback((e: KeyboardEvent) => {
-    // If user is typing in an input field, don't trigger shortcuts
-    if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
-      return;
-    }
-    
-    // Ctrl/Cmd + Enter to generate quote
-    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-      if (name.trim() && !isGenerating) {
-        e.preventDefault();
-        handleGenerateQuote();
-      }
-    }
-    
-    // Ctrl/Cmd + S to share quote if one exists
-    if ((e.ctrlKey || e.metaKey) && e.key === 's' && hasGenerated) {
-      e.preventDefault();
-      shareQuote();
-    }
-    
-    // Ctrl/Cmd + H to toggle history
-    if ((e.ctrlKey || e.metaKey) && e.key === 'h') {
-      e.preventDefault();
-      setShowHistory(!showHistory);
-    }
-    
-    // Ctrl/Cmd + K to show keyboard shortcuts
-    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-      e.preventDefault();
-      setShowKeyboardShortcuts(true);
-    }
-    
-    // Ctrl/Cmd + / to show help
-    if ((e.ctrlKey || e.metaKey) && e.key === '/') {
-      e.preventDefault();
-      setShowHelpModal(true);
-    }
-    
-    // Escape to close modals
-    if (e.key === 'Escape') {
-      if (showKeyboardShortcuts) {
-        setShowKeyboardShortcuts(false);
-      } else if (showShareOptions) {
-        setShowShareOptions(false);
-      } else if (showHelpModal) {
-        setShowHelpModal(false);
-      } else if (showHistory) {
-        setShowHistory(false);
-      }
-    }
-  }, [name, isGenerating, hasGenerated, showHistory, showKeyboardShortcuts, showShareOptions, showHelpModal]);
-  
-  useEffect(() => {
-    // Add keyboard shortcut listener
-    window.addEventListener('keydown', handleKeyboardShortcuts);
-    
-    return () => {
-      window.removeEventListener('keydown', handleKeyboardShortcuts);
-    };
-  }, [handleKeyboardShortcuts]);
-
   // Handle touch gestures
   const handleSwipeLeft = () => {
     // Only respond to swipes when we have a quote
@@ -343,7 +278,7 @@ export default function Home() {
       shareQuote();
     }
   };
-  
+
   const handleSwipeRight = () => {
     // Toggle history on swipe right
     setShowHistory(!showHistory);
@@ -364,8 +299,8 @@ export default function Home() {
               We encountered an error while loading the application. Please try refreshing the page.
             </p>
             <div className="flex justify-end">
-              <Button 
-                color="secondary" 
+              <Button
+                color="secondary"
                 onClick={() => window.location.reload()}
               >
                 Refresh Page
@@ -374,26 +309,21 @@ export default function Home() {
           </div>
         </div>
       )}
-      
+
       {/* Screen reader announcements */}
       {screenReaderMessage && (
         <ScreenReaderAnnouncement message={screenReaderMessage} />
       )}
-      
+
       {/* Help/Tips Button */}
       <QuickTipsButton onClick={() => setShowHelpModal(true)} />
-      
+
       {/* Modals */}
-      <KeyboardShortcuts 
-        isVisible={showKeyboardShortcuts} 
-        onClose={() => setShowKeyboardShortcuts(false)} 
-      />
-      
       <HelpModal
         isVisible={showHelpModal}
         onClose={() => setShowHelpModal(false)}
       />
-      
+
       <QuoteShareOptions
         isOpen={showShareOptions}
         onClose={() => setShowShareOptions(false)}
@@ -401,18 +331,18 @@ export default function Home() {
         name={name}
         date={currentDate}
       />
-      
+
       <AchievementModal
         isOpen={showAchievement}
         onClose={() => setShowAchievement(false)}
         achievement={currentAchievement}
       />
-      
+
       <AppNavbar />
-      
+
       {/* Background decorative elements */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0">
-        <motion.div 
+        <motion.div
           className="absolute top-1/5 left-10 w-64 h-64 bg-purple-600/10 dark:bg-purple-600/20 rounded-full filter blur-3xl"
           animate={{
             scale: [1, 1.2, 1],
@@ -424,7 +354,7 @@ export default function Home() {
             ease: "easeInOut"
           }}
         />
-        <motion.div 
+        <motion.div
           className="absolute bottom-20 right-10 w-80 h-80 bg-pink-600/10 dark:bg-pink-600/20 rounded-full filter blur-3xl"
           animate={{
             scale: [1, 1.3, 1],
@@ -437,7 +367,7 @@ export default function Home() {
             delay: 0.5
           }}
         />
-        <motion.div 
+        <motion.div
           className="absolute top-1/3 right-1/4 w-40 h-40 bg-indigo-600/10 dark:bg-indigo-600/20 rounded-full filter blur-3xl"
           animate={{
             scale: [1, 1.1, 1],
@@ -451,10 +381,10 @@ export default function Home() {
           }}
         />
       </div>
-      
+
       <div className="container mx-auto px-4 py-6 md:py-12 flex flex-col items-center flex-grow z-10">
         <header className="mb-8 md:mb-12 text-center max-w-2xl mx-auto">
-          <motion.h1 
+          <motion.h1
             className="text-3xl md:text-5xl lg:text-6xl font-bold mb-3 md:mb-4 bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-violet-500"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -462,35 +392,8 @@ export default function Home() {
           >
             Daily Motivation
           </motion.h1>
-          <motion.p 
-            className="text-base md:text-lg text-default-600 dark:text-default-400"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
-          >
-            Get your personalized quote generated uniquely for you
-          </motion.p>
-          
-          {/* Keyboard shortcut hint */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.6 }}
-            className="mt-2 md:mt-4"
-          >
-            <Button
-              variant="light"
-              size="sm"
-              onClick={() => setShowKeyboardShortcuts(true)}
-              className={`text-xs text-default-500 ${firstLoad ? 'animate-pulse' : ''}`}
-            >
-              <span className="flex items-center gap-1">
-                Press <Kbd className="px-1.5 py-0.5 text-[10px]">Ctrl</Kbd>+<Kbd className="px-1.5 py-0.5 text-[10px]">K</Kbd> for shortcuts
-              </span>
-            </Button>
-          </motion.div>
         </header>
-        
+
         <main className="w-full max-w-md mx-auto flex flex-col items-center space-y-6 md:space-y-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -499,9 +402,9 @@ export default function Home() {
           >
             <Card className="w-full shadow-md glass-card" radius="lg">
               <CardBody className="p-4 md:p-6 space-y-4 md:space-y-6">
-                <Tabs 
-                  aria-label="Quote Type" 
-                  size="lg" 
+                <Tabs
+                  aria-label="Quote Type"
+                  size="lg"
                   color={selected === "motivational" ? "secondary" : "default"}
                   variant="bordered"
                   classNames={{
@@ -514,9 +417,9 @@ export default function Home() {
                   <Tab key="motivational" title="Motivational" />
                   <Tab key="unmotivational" title="Reality Check" />
                 </Tabs>
-                
+
                 <Divider />
-                
+
                 <div className="space-y-4">
                   <Input
                     ref={inputNameRef}
@@ -539,7 +442,7 @@ export default function Home() {
                       }
                     }}
                   />
-                  
+
                   <Input
                     label="Date"
                     type="date"
@@ -554,15 +457,14 @@ export default function Home() {
                       input: "text-sm md:text-base",
                     }}
                   />
-                  
+
                   <div className="flex flex-col sm:flex-row gap-2">
                     <motion.div
                       whileHover={{ scale: 1.03 }}
                       whileTap={{ scale: 0.97 }}
                       className="flex-1"
                     >
-                      <Tooltip content="Press Ctrl+Enter to generate" placement="bottom">
-                        <Button
+                      <Button
                           color="secondary"
                           size="lg"
                           radius="lg"
@@ -575,15 +477,13 @@ export default function Home() {
                         >
                           {isGenerating ? "Generating..." : "Generate Quote"}
                         </Button>
-                      </Tooltip>
                     </motion.div>
-                    
+
                     <motion.div
                       whileHover={{ scale: 1.03 }}
                       whileTap={{ scale: 0.97 }}
                     >
-                      <Tooltip content="Press Ctrl+H to toggle history" placement="bottom">
-                        <Button
+                      <Button
                           color="default"
                           variant="flat"
                           size="lg"
@@ -593,17 +493,16 @@ export default function Home() {
                         >
                           {showHistory ? "Hide History" : "Quote History"}
                         </Button>
-                      </Tooltip>
                     </motion.div>
                   </div>
                 </div>
               </CardBody>
             </Card>
           </motion.div>
-          
+
           {/* Show skeleton while loading */}
           {showSkeleton && !hasGenerated && (
-            <motion.div 
+            <motion.div
               className="mt-8 md:mt-12 w-full"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -612,29 +511,29 @@ export default function Home() {
               <QuoteCardSkeleton />
             </motion.div>
           )}
-          
+
           {/* Show the actual quote */}
           {hasGenerated && !showSkeleton && (
-            <motion.div 
+            <motion.div
               id="quote-section"
               className="mt-8 md:mt-12 w-full relative"
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ 
-                duration: 0.7, 
-                ease: [0.23, 1, 0.32, 1] 
+              transition={{
+                duration: 0.7,
+                ease: [0.23, 1, 0.32, 1]
               }}
             >
-              <QuoteCard 
-                name={name} 
-                date={currentDate} 
-                quote={quote} 
+              <QuoteCard
+                name={name}
+                date={currentDate}
+                quote={quote}
                 isUnmotivational={isUnmotivational}
                 onCopy={copyToClipboard}
               />
-              
+
               <div className="flex justify-center mt-4">
-                <Tooltip content="Share this quote (Ctrl+S)">
+                <Tooltip content="Share this quote">
                   <motion.div
                     whileHover={{ scale: 1.1, rotate: 10 }}
                     whileTap={{ scale: 0.9 }}
@@ -654,7 +553,7 @@ export default function Home() {
               </div>
             </motion.div>
           )}
-          
+
           {/* History panel */}
           <AnimatePresence>
             {showHistory && (
@@ -665,7 +564,7 @@ export default function Home() {
                 transition={{ duration: 0.3 }}
                 className="w-full"
               >
-                <QuoteHistory 
+                <QuoteHistory
                   history={quoteHistory}
                   onSelectQuote={handleSelectHistoryQuote}
                   onClearHistory={handleClearHistory}
@@ -675,7 +574,7 @@ export default function Home() {
           </AnimatePresence>
         </main>
       </div>
-      
+
       <Footer />
     </SwipeHandler>
   );
