@@ -4,11 +4,8 @@ import {
   Button,
   Card,
   CardBody,
-  Divider,
   Input,
   Spinner,
-  Tab,
-  Tabs,
   Tooltip
 } from "@nextui-org/react";
 import { motion } from "framer-motion";
@@ -28,11 +25,9 @@ import { formatDate, generateQuote } from './utils/quoteGenerator';
 export default function Home() {
   const [name, setName] = useState("");
   const [quote, setQuote] = useState("");
-  const [isUnmotivational, setIsUnmotivational] = useState(false);
   const [currentDate, setCurrentDate] = useState("");
   const [hasGenerated, setHasGenerated] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [selected, setSelected] = useState("motivational");
   const [showSkeleton, setShowSkeleton] = useState(false);
   const [screenReaderMessage, setScreenReaderMessage] = useState("");
   const [showShareOptions, setShowShareOptions] = useState(false);
@@ -65,10 +60,6 @@ export default function Home() {
     }
   }, []);
 
-  useEffect(() => {
-    setIsUnmotivational(selected === "unmotivational");
-  }, [selected]);
-
   const handleGenerateQuote = () => {
     if (name.trim() === "") return;
 
@@ -77,7 +68,7 @@ export default function Home() {
 
     // Simulate loading for better UX
     setTimeout(() => {
-      const result = generateQuote(name, currentDate, isUnmotivational);
+      const result = generateQuote(name, currentDate);
       setQuote(result.text);
       setHasGenerated(true);
       setShowSkeleton(false);
@@ -91,7 +82,7 @@ export default function Home() {
       setIsGenerating(false);
 
       toast.success('Quote generated!', {
-        description: isUnmotivational ? 'Your reality check is ready' : 'Your motivational quote is ready',
+        description: 'Your personalized quote is ready',
         duration: 3000,
       });
     }, 600);
@@ -308,24 +299,6 @@ export default function Home() {
           >
             <Card className="w-full shadow-md glass-card" radius="lg">
               <CardBody className="p-4 md:p-6 space-y-4 md:space-y-6">
-                <Tabs
-                  aria-label="Quote Type"
-                  size="lg"
-                  color={selected === "motivational" ? "secondary" : "default"}
-                  variant="bordered"
-                  classNames={{
-                    tabList: "gap-2 md:gap-4",
-                    tab: "px-2 md:px-4 h-8 md:h-10 text-sm md:text-base",
-                  }}
-                  selectedKey={selected}
-                  onSelectionChange={(key) => setSelected(key as string)}
-                >
-                  <Tab key="motivational" title="Motivational" />
-                  <Tab key="unmotivational" title="Reality Check" />
-                </Tabs>
-
-                <Divider />
-
                 <div className="space-y-4">
                   <Input
                     ref={inputNameRef}
@@ -418,7 +391,7 @@ export default function Home() {
                 name={name}
                 date={currentDate}
                 quote={quote}
-                isUnmotivational={isUnmotivational}
+                isUnmotivational={quote.length > 0 ? quote.toLowerCase().includes('sorry') || quote.toLowerCase().includes('reality') : false}
                 onCopy={copyToClipboard}
               />
 
