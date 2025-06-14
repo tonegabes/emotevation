@@ -16,10 +16,8 @@ import { useEffect, useRef, useState } from 'react';
 import { toast } from "sonner";
 import AchievementModal from './components/AchievementModal';
 import Footer from './components/Footer';
-import HelpModal from './components/HelpModal';
 import { ShareIcon } from './components/Icons';
 import AppNavbar from './components/Navbar';
-import QuickTipsButton from './components/QuickTipsButton';
 import QuoteCard from './components/QuoteCard';
 import QuoteCardSkeleton from './components/QuoteCardSkeleton';
 import QuoteShareOptions from './components/QuoteShareOptions';
@@ -38,7 +36,6 @@ export default function Home() {
   const [showSkeleton, setShowSkeleton] = useState(false);
   const [screenReaderMessage, setScreenReaderMessage] = useState("");
   const [showShareOptions, setShowShareOptions] = useState(false);
-  const [showHelpModal, setShowHelpModal] = useState(false);
   const [firstLoad, setFirstLoad] = useState(true);
   const [showAchievement, setShowAchievement] = useState(false);
   const [currentAchievement, setCurrentAchievement] = useState({
@@ -57,16 +54,6 @@ export default function Home() {
       // Set the current date on component mount
       const today = new Date();
       setCurrentDate(formatDate(today));
-
-      // Check if this is the first visit
-      const hasVisitedBefore = localStorage.getItem('hasVisitedBefore');
-      if (!hasVisitedBefore) {
-        // Show the help modal on first visit after a short delay
-        setTimeout(() => {
-          setShowHelpModal(true);
-          localStorage.setItem('hasVisitedBefore', 'true');
-        }, 1500);
-      }
 
       // Set first load to false after 3 seconds
       setTimeout(() => {
@@ -242,15 +229,7 @@ export default function Home() {
         <ScreenReaderAnnouncement message={screenReaderMessage} />
       )}
 
-      {/* Help/Tips Button */}
-      <QuickTipsButton onClick={() => setShowHelpModal(true)} />
-
       {/* Modals */}
-      <HelpModal
-        isVisible={showHelpModal}
-        onClose={() => setShowHelpModal(false)}
-      />
-
       <QuoteShareOptions
         isOpen={showShareOptions}
         onClose={() => setShowShareOptions(false)}
