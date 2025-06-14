@@ -1,8 +1,8 @@
 "use client";
 
-import React from 'react';
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Image, Divider } from "@nextui-org/react";
+import { Button, Divider, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/react";
 import { motion } from "framer-motion";
+import React from 'react';
 
 interface AchievementModalProps {
   isOpen: boolean;
@@ -15,10 +15,10 @@ interface AchievementModalProps {
   };
 }
 
-const AchievementModal: React.FC<AchievementModalProps> = ({ 
-  isOpen, 
-  onClose, 
-  achievement 
+const AchievementModal: React.FC<AchievementModalProps> = ({
+  isOpen,
+  onClose,
+  achievement
 }) => {
   // Get background gradient based on achievement level
   const getBgGradient = () => {
@@ -35,15 +35,14 @@ const AchievementModal: React.FC<AchievementModalProps> = ({
         return 'from-purple-500 to-blue-500';
     }
   };
-  
+
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
       backdrop="blur"
-      classNames={{
-        backdrop: "bg-gradient-to-t from-zinc-900/20 to-zinc-900/20 backdrop-blur-md",
-        base: "border border-zinc-200 dark:border-zinc-700 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md",
+      classNames={{        backdrop: "bg-gradient-to-t from-zinc-900/20 to-zinc-900/20 backdrop-blur-md",
+        base: "border border-divider bg-content1/90 backdrop-blur-md",
       }}
     >
       <ModalContent>
@@ -74,11 +73,11 @@ const AchievementModal: React.FC<AchievementModalProps> = ({
                   transition={{ delay: 0.2, duration: 0.5 }}
                   className={`w-24 h-24 rounded-full bg-gradient-to-br ${getBgGradient()} flex items-center justify-center shadow-lg p-1`}
                 >
-                  <div className="bg-white/90 dark:bg-zinc-900/90 w-full h-full rounded-full flex items-center justify-center">
+                  <div className="bg-content1/90 w-full h-full rounded-full flex items-center justify-center">
                     <span className="text-3xl">{achievement.icon}</span>
                   </div>
                 </motion.div>
-                
+
                 <motion.div
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
@@ -88,9 +87,9 @@ const AchievementModal: React.FC<AchievementModalProps> = ({
                   <h3 className="text-xl font-bold">{achievement.title}</h3>
                   <p className="text-default-500 mt-1">{achievement.description}</p>
                 </motion.div>
-                
+
                 <Divider className="my-2" />
-                
+
                 <motion.div
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}

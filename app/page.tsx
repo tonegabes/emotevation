@@ -189,18 +189,16 @@ export default function Home() {
     return;
   };
 
-  return (
-    <SwipeHandler
+  return (    <SwipeHandler
       onSwipeLeft={handleSwipeLeft}
       onSwipeRight={handleSwipeRight}
-      className="min-h-screen flex flex-col bg-background dark:bg-[#13151a] relative overflow-hidden"
-    >
-      {/* Handle error state */}
+      className="min-h-screen flex flex-col bg-background relative overflow-hidden"
+    >      {/* Handle error state */}
       {errorState && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background dark:bg-[#13151a] bg-opacity-90 dark:bg-opacity-90">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 m-4 max-w-md w-full">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/90">
+          <div className="bg-background-contrast rounded-lg shadow-xl p-6 m-4 max-w-md w-full">
             <h2 className="text-2xl font-bold text-pink-600 mb-4">Something went wrong</h2>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
+            <p className="text-default-500 mb-4">
               We encountered an error while loading the application. Please try refreshing the page.
             </p>
             <div className="flex justify-end">
@@ -238,9 +236,8 @@ export default function Home() {
       <AppNavbar />
 
       {/* Background decorative elements */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0">
-        <motion.div
-          className="absolute top-1/5 left-10 w-64 h-64 bg-purple-600/10 dark:bg-purple-600/20 rounded-full filter blur-3xl"
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0">        <motion.div
+          className="absolute top-1/5 left-10 w-64 h-64 bg-purple-600/20 rounded-full filter blur-3xl"
           animate={{
             scale: [1, 1.2, 1],
             opacity: [0.6, 0.8, 0.6],
@@ -252,7 +249,7 @@ export default function Home() {
           }}
         />
         <motion.div
-          className="absolute bottom-20 right-10 w-80 h-80 bg-pink-600/10 dark:bg-pink-600/20 rounded-full filter blur-3xl"
+          className="absolute bottom-20 right-10 w-80 h-80 bg-pink-600/20 rounded-full filter blur-3xl"
           animate={{
             scale: [1, 1.3, 1],
             opacity: [0.6, 0.9, 0.6],
@@ -265,7 +262,7 @@ export default function Home() {
           }}
         />
         <motion.div
-          className="absolute top-1/3 right-1/4 w-40 h-40 bg-indigo-600/10 dark:bg-indigo-600/20 rounded-full filter blur-3xl"
+          className="absolute top-1/3 right-1/4 w-40 h-40 bg-indigo-600/20 rounded-full filter blur-3xl"
           animate={{
             scale: [1, 1.1, 1],
             opacity: [0.6, 0.7, 0.6],
@@ -307,11 +304,10 @@ export default function Home() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     variant="bordered"
-                    radius="lg"
-                    fullWidth
+                    radius="lg"                    fullWidth
                     isClearable
                     classNames={{
-                      inputWrapper: "backdrop-blur-sm bg-white/20 dark:bg-black/20",
+                      inputWrapper: "backdrop-blur-sm bg-content1/30",
                       label: "text-sm",
                       input: "text-sm md:text-base",
                     }}
@@ -328,10 +324,9 @@ export default function Home() {
                     value={currentDate}
                     onChange={(e) => setCurrentDate(e.target.value)}
                     variant="bordered"
-                    radius="lg"
-                    fullWidth
+                    radius="lg"                    fullWidth
                     classNames={{
-                      inputWrapper: "backdrop-blur-sm bg-white/20 dark:bg-black/20",
+                      inputWrapper: "backdrop-blur-sm bg-content1/30",
                       label: "text-sm",
                       input: "text-sm md:text-base",
                     }}

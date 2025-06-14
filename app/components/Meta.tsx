@@ -31,19 +31,19 @@ export const metadata: Metadata = {
     images: ['/emotevation-preview.png'],
     creator: '@tonegabes',
   },
-  authors: [{ name: 'Tony Gabriel' }],
-  creator: 'Tony Gabriel',
-  publisher: 'Tony Gabriel',
+  authors: [{ name: 'Tone Gabes' }],
+  creator: 'Tone Gabes',
+  publisher: 'Tone Gabes',
   robots: 'index, follow',
 };
 
-// The MetaComponent doesn't render anything, it's just a way to add 
+// The MetaComponent doesn't render anything, it's just a way to add
 // client-side analytics or tracking scripts if needed in the future
 const MetaComponent = () => {
   useEffect(() => {
     // You could add analytics initialization here
   }, []);
-  
+
   return null;
 };
 

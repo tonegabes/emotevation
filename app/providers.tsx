@@ -4,14 +4,13 @@ import { NextUIProvider } from "@nextui-org/react";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { Toaster } from "sonner";
 
-export function Providers({ children }: { children: React.ReactNode }) {
-  return (
+export function Providers({ children }: { children: React.ReactNode }) {  return (
     <NextUIProvider>
-      <NextThemesProvider attribute="class" defaultTheme="light">
+      <NextThemesProvider attribute="class" defaultTheme="system" enableSystem>
         {children}
-        <Toaster 
-          position="top-center" 
-          richColors 
+        <Toaster
+          position="top-center"
+          richColors
           closeButton
           expand
           theme="system"

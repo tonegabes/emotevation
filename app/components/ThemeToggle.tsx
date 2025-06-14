@@ -1,10 +1,10 @@
 "use client";
 
-import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
 import { Switch } from "@nextui-org/react";
 import { motion } from "framer-motion";
-import { SunIcon, MoonIcon } from "./Icons";
+import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
+import { MoonIcon, SunIcon } from "./Icons";
 
 const ThemeToggle = () => {
   const [mounted, setMounted] = useState(false);
@@ -16,14 +16,13 @@ const ThemeToggle = () => {
   }, []);
 
   if (!mounted) return null;
-
   return (
     <motion.div
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
     >
       <Switch
-        defaultSelected={theme === "dark"}
+        isSelected={theme === "dark"}
         size="lg"
         color="secondary"
         startContent={
@@ -44,7 +43,7 @@ const ThemeToggle = () => {
             <MoonIcon />
           </motion.div>
         }
-        onChange={(e) => setTheme(e.target.checked ? "dark" : "light")}
+        onValueChange={(isSelected) => setTheme(isSelected ? "dark" : "light")}
         className="ml-auto"
       />
     </motion.div>

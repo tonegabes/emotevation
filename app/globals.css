@@ -3,20 +3,18 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: 255, 255, 255;
+  --foreground: 23, 23, 23;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+.dark {
+  --background: 10, 10, 10;
+  --foreground: 237, 237, 237;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: rgb(var(--background));
+  color: rgb(var(--foreground));
   font-family: var(--font-inter, Arial, Helvetica, sans-serif);
 }
 
@@ -223,13 +221,13 @@ body {
 
 /* Better mobile touch targets */
 @media (max-width: 640px) {
-  button, 
-  a, 
+  button,
+  a,
   [role="button"] {
     min-height: 44px;
     min-width: 44px;
   }
-  
+
   .touch-target {
     min-height: 44px;
     min-width: 44px;

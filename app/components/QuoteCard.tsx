@@ -134,9 +134,8 @@ const QuoteCard: React.FC<QuoteCardProps> = ({
             transition={{ duration: 0.5, delay: 0.3 }}
           >
             <h2 className={`text-xl font-bold ${
-              isUnmotivational
-                ? 'text-zinc-700 dark:text-zinc-400'
-                : 'text-purple-600 dark:text-purple-400'
+              isUnmotivational                ? 'text-default-400'
+                : 'text-purple-600'
             }`}>
               {isUnmotivational ? 'Your Reality Check for Today' : 'Your Quote for Today'}
             </h2>
