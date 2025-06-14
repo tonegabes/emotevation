@@ -63,7 +63,6 @@ const HelpModal: React.FC<HelpModalProps> = ({ isVisible, onClose }) => {
                     <p>On mobile devices, you can use gestures:</p>
                     <ul className="list-disc pl-5 space-y-1">
                       <li><strong>Swipe left</strong> on a quote to share it</li>
-                      <li><strong>Swipe right</strong> to view your quote history</li>
                       <li><strong>Tap</strong> on the quote to copy it to clipboard</li>
                     </ul>
                   </div>
@@ -86,8 +85,7 @@ const HelpModal: React.FC<HelpModalProps> = ({ isVisible, onClose }) => {
                     <ul className="list-disc pl-5 space-y-1">
                       <li>All data is stored locally in your browser</li>
                       <li>No personal information is sent to any server</li>
-                      <li>Quote history is saved only on your device</li>
-                      <li>You can clear your history at any time</li>
+                      <li>Your achievements are saved only on your device</li>
                     </ul>
                   </div>
                 </AccordionItem>

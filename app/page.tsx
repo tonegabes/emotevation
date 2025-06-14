@@ -11,10 +11,9 @@ import {
   Tabs,
   Tooltip
 } from "@nextui-org/react";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from 'react';
 import { toast } from "sonner";
-import { v4 as uuidv4 } from 'uuid';
 import AchievementModal from './components/AchievementModal';
 import Footer from './components/Footer';
 import HelpModal from './components/HelpModal';
@@ -23,20 +22,10 @@ import AppNavbar from './components/Navbar';
 import QuickTipsButton from './components/QuickTipsButton';
 import QuoteCard from './components/QuoteCard';
 import QuoteCardSkeleton from './components/QuoteCardSkeleton';
-import QuoteHistory from './components/QuoteHistory';
 import QuoteShareOptions from './components/QuoteShareOptions';
 import ScreenReaderAnnouncement from './components/ScreenReaderAnnouncement';
 import SwipeHandler from './components/SwipeHandler';
 import { formatDate, generateQuote } from './utils/quoteGenerator';
-
-interface HistoryQuote {
-  id: string;
-  name: string;
-  date: string;
-  quote: string;
-  isUnmotivational: boolean;
-  timestamp: number;
-}
 
 export default function Home() {
   const [name, setName] = useState("");
@@ -46,8 +35,6 @@ export default function Home() {
   const [hasGenerated, setHasGenerated] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [selected, setSelected] = useState("motivational");
-  const [quoteHistory, setQuoteHistory] = useState<HistoryQuote[]>([]);
-  const [showHistory, setShowHistory] = useState(false);
   const [showSkeleton, setShowSkeleton] = useState(false);
   const [screenReaderMessage, setScreenReaderMessage] = useState("");
   const [showShareOptions, setShowShareOptions] = useState(false);
@@ -70,19 +57,6 @@ export default function Home() {
       // Set the current date on component mount
       const today = new Date();
       setCurrentDate(formatDate(today));
-
-      // Load quote history from localStorage
-      const savedHistory = localStorage.getItem('quoteHistory');
-      if (savedHistory) {
-        try {
-          const parsedHistory = JSON.parse(savedHistory);
-          if (Array.isArray(parsedHistory)) {
-            setQuoteHistory(parsedHistory);
-          }
-        } catch (error) {
-          console.error('Error parsing quote history:', error);
-        }
-      }
 
       // Check if this is the first visit
       const hasVisitedBefore = localStorage.getItem('hasVisitedBefore');
@@ -108,23 +82,11 @@ export default function Home() {
     setIsUnmotivational(selected === "unmotivational");
   }, [selected]);
 
-  useEffect(() => {
-    // Save quote history to localStorage when it changes
-    if (quoteHistory.length > 0) {
-      localStorage.setItem('quoteHistory', JSON.stringify(quoteHistory));
-    }
-  }, [quoteHistory]);
-
   const handleGenerateQuote = () => {
     if (name.trim() === "") return;
 
     setIsGenerating(true);
     setShowSkeleton(true);
-
-    // Hide history when generating a new quote
-    if (showHistory) {
-      setShowHistory(false);
-    }
 
     // Simulate loading for better UX
     setTimeout(() => {
@@ -136,25 +98,8 @@ export default function Home() {
       // Set screen reader announcement
       setScreenReaderMessage(`Quote generated for ${name}: ${result.text}`);
 
-      // Add quote to history
-      const newQuoteRecord: HistoryQuote = {
-        id: uuidv4(),
-        name,
-        date: currentDate,
-        quote: result.text,
-        isUnmotivational,
-        timestamp: Date.now()
-      };
-
-      // Add to beginning of history array and keep only the latest 10 quotes
-      setQuoteHistory(prevHistory => {
-        const newHistory = [newQuoteRecord, ...prevHistory].slice(0, 10);
-
-        // Check for achievements
-        checkForAchievements(newHistory.length);
-
-        return newHistory;
-      });
+      // Check for achievements
+      checkForAchievements();
 
       setIsGenerating(false);
 
@@ -166,12 +111,16 @@ export default function Home() {
   };
 
   // Check for achievements based on number of quotes generated
-  const checkForAchievements = (quoteCount: number) => {
+  const checkForAchievements = () => {
     // Only show one achievement at a time
     let achievementUnlocked = false;
 
     // Get previously unlocked achievements
     const unlockedAchievements = JSON.parse(localStorage.getItem('unlockedAchievements') || '[]');
+
+    // Get quote count from localStorage or start at 1
+    let quoteCount = parseInt(localStorage.getItem('quoteCount') || '0') + 1;
+    localStorage.setItem('quoteCount', quoteCount.toString());
 
     // First quote achievement
     if (quoteCount === 1 && !unlockedAchievements.includes('first_quote')) {
@@ -195,7 +144,7 @@ export default function Home() {
       achievementUnlocked = true;
       unlockedAchievements.push('quote_collector');
     }
-    // 10 quotes achievement (max in history)
+    // 10 quotes achievement
     else if (quoteCount >= 10 && !unlockedAchievements.includes('quote_enthusiast')) {
       setCurrentAchievement({
         title: 'Quote Enthusiast',
@@ -233,28 +182,6 @@ export default function Home() {
     }
   };
 
-  const handleClearHistory = () => {
-    setQuoteHistory([]);
-    localStorage.removeItem('quoteHistory');
-    toast.success('History cleared', {
-      description: 'All your quote history has been removed',
-    });
-  };
-
-  const handleSelectHistoryQuote = (historyItem: HistoryQuote) => {
-    setName(historyItem.name);
-    setCurrentDate(historyItem.date);
-    setQuote(historyItem.quote);
-    setIsUnmotivational(historyItem.isUnmotivational);
-    setSelected(historyItem.isUnmotivational ? "unmotivational" : "motivational");
-    setHasGenerated(true);
-    setShowHistory(false);
-
-    toast.info('Historical quote loaded', {
-      description: `Quote from ${historyItem.date} restored`,
-    });
-  };
-
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text)
       .then(() => {
@@ -280,8 +207,8 @@ export default function Home() {
   };
 
   const handleSwipeRight = () => {
-    // Toggle history on swipe right
-    setShowHistory(!showHistory);
+    // No longer toggles history, could be used for something else in the future
+    return;
   };
 
   return (
@@ -478,22 +405,6 @@ export default function Home() {
                           {isGenerating ? "Generating..." : "Generate Quote"}
                         </Button>
                     </motion.div>
-
-                    <motion.div
-                      whileHover={{ scale: 1.03 }}
-                      whileTap={{ scale: 0.97 }}
-                    >
-                      <Button
-                          color="default"
-                          variant="flat"
-                          size="lg"
-                          radius="lg"
-                          onClick={() => setShowHistory(!showHistory)}
-                          className="font-medium text-sm md:text-base"
-                        >
-                          {showHistory ? "Hide History" : "Quote History"}
-                        </Button>
-                    </motion.div>
                   </div>
                 </div>
               </CardBody>
@@ -553,25 +464,6 @@ export default function Home() {
               </div>
             </motion.div>
           )}
-
-          {/* History panel */}
-          <AnimatePresence>
-            {showHistory && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.3 }}
-                className="w-full"
-              >
-                <QuoteHistory
-                  history={quoteHistory}
-                  onSelectQuote={handleSelectHistoryQuote}
-                  onClearHistory={handleClearHistory}
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
         </main>
       </div>
 
