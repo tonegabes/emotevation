@@ -1,9 +1,10 @@
 "use client";
 
-import { Avatar, Button, Card, CardBody, CardFooter, CardHeader, Divider, Tooltip } from "@nextui-org/react";
+import { Button, Card, CardBody, CardFooter, CardHeader, Divider, Tooltip } from "@nextui-org/react";
 import { AnimatePresence, motion, useInView } from "framer-motion";
 import React, { useEffect, useRef, useState } from 'react';
 import { toast } from "sonner";
+import { generateEmoji } from '../utils/quoteGenerator';
 
 interface QuoteCardProps {
   name: string;
@@ -24,6 +25,9 @@ const QuoteCard: React.FC<QuoteCardProps> = ({
   const quoteTextRef = useRef<HTMLQuoteElement>(null);
   const isInView = useInView(cardRef, { once: true });
   const [isCopied, setIsCopied] = useState(false);
+
+  // Generate random emoji based on name and date
+  const randomEmoji = generateEmoji(name, date, isUnmotivational);
 
   useEffect(() => {
     // Add a small delay to ensure the animation has started
@@ -91,51 +95,13 @@ const QuoteCard: React.FC<QuoteCardProps> = ({
       <Card className="max-w-xl mx-auto border-none shadow-xl">
         <CardHeader className="flex gap-3 justify-center relative pb-6 md:pb-8 pt-8 md:pt-10">
           <motion.div
-            className="absolute -top-8"
-            initial={{ y: -10, scale: 0.8, opacity: 0 }}
-            animate={{ y: 0, scale: 1, opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            <Avatar
-              radius="full"
-              size="lg"
-              className={`w-14 h-14 md:w-16 md:h-16 text-white shadow-lg border-4 ${
-                isUnmotivational
-                  ? 'bg-gradient-to-br from-zinc-600 to-zinc-800 border-zinc-500/20'
-                  : 'bg-gradient-to-br from-purple-600 to-pink-600 border-white/20'
-              }`}
-              icon={
-                isUnmotivational ? (
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22Z" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M8 15H16" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M9 9H9.01" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M15 9H15.01" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                ) : (
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M9 22H15C20 22 22 20 22 15V9C22 4 20 2 15 2H9C4 2 2 4 2 9V15C2 20 4 22 9 22Z" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M16 12.9C16 11.9 15.19 11.07 14.2 11C14.08 10.99 13.96 10.99 13.84 11C12.94 11.07 12.18 11.9 12.18 12.81C12.18 13.67 12.81 14.4 13.66 14.57V15.55C13.66 16.01 14.04 16.4 14.5 16.4C14.96 16.4 15.34 16.02 15.34 15.56V14.58C16.2 14.4 16.82 13.67 16.82 12.81C16.82 12.8 16.81 12.8 16.81 12.8" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M14.5 8.8V9.35" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M14.5 17.45V18" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M8.5 16.4C7.1 16.4 6 15.3 6 13.9V12.4C6 11 7.1 9.90002 8.5 9.90002C9.9 9.90002 11 11 11 12.4V13.9C11 15.3 9.9 16.4 8.5 16.4Z" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M8.5 16.4V18.2" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M8.5 9.90001V8.10001" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                )
-              }
-            />
-          </motion.div>
-
-          <motion.div
-            className="flex flex-col items-center mt-6 md:mt-8"
+            className="flex flex-col items-center"
             initial={{ y: 10, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.3 }}
           >
             <h2 className={`text-xl font-bold ${
-              isUnmotivational                ? 'text-default-400'
-                : 'text-purple-600'
+              isUnmotivational ? 'text-default-400' : 'text-purple-600'
             }`}>
               {isUnmotivational ? 'Your Reality Check for Today' : 'Your Quote for Today'}
             </h2>
@@ -149,13 +115,29 @@ const QuoteCard: React.FC<QuoteCardProps> = ({
 
         <Divider />
 
-        <CardBody className="relative px-4 md:px-8 py-4 md:py-6 group">
+        <CardBody className="relative px-4 md:px-8 py-6 md:py-8 group">
+          {/* Random Emoji in highlight above quote */}
+          <motion.div
+            className="flex justify-center mb-4"
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.4, type: "spring", stiffness: 200 }}
+          >
+            <div className={`w-24 h-24 md:w-28 md:h-28 rounded-full flex items-center justify-center text-4xl md:text-5xl ${
+              isUnmotivational
+                ? 'bg-gradient-to-br from-zinc-100 to-zinc-200 shadow-lg'
+                : 'bg-gradient-to-br from-purple-100 to-pink-100 shadow-lg'
+            }`}>
+              {randomEmoji}
+            </div>
+          </motion.div>
+
           <motion.blockquote
             ref={quoteTextRef}
             className="text-lg md:text-xl italic text-center font-light leading-relaxed"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
           >
             &ldquo;{quote}&rdquo;
           </motion.blockquote>
@@ -201,7 +183,7 @@ const QuoteCard: React.FC<QuoteCardProps> = ({
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.5 }}
+            transition={{ duration: 0.5, delay: 0.8 }}
           >
             {isUnmotivational
               ? 'This reality check is uniquely generated for you based on your name and this date'

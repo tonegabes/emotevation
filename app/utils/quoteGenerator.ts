@@ -1,6 +1,39 @@
 import { quotes } from '../data/quotes';
 import { unmotivationalQuotes } from '../data/unmotivationalQuotes';
 
+// Emojis motivacionais
+const motivationalEmojis = [
+  '✨', '🌟', '💫', '🔥', '💪', '🚀', '🌈', '☀️',
+  '🎯', '💎', '🏆', '🌺', '🦋', '🌸', '💝', '🎊',
+  '🌻', '🎉', '💖', '🌙', '⭐', '🎈', '🌷', '🍀',
+  '🎨', '🎭', '🎪', '🎵', '🎶', '🎼', '🎤', '🎸',
+  '🌅', '🌄', '🏔️', '🌊', '🌴', '🌲', '🌳', '🌿',
+  '🦄', '🐝', '🐛', '🦋', '🐞', '🌼', '🌻', '🌺',
+  '💐', '🌹', '🥀', '🌷', '🌸', '💮', '🏵️', '🌾',
+  '🍯', '🍓', '🍑', '🍊', '🍋', '🍌', '🍍', '🥭',
+  '🎪', '🎠', '🎡', '🎢', '🎳', '🎮', '🎲', '🃏',
+  '🏅', '🥇', '🥈', '🥉', '🏆', '🎖️', '🏵️', '🎗️',
+  '💯', '💢', '💥', '💨', '💦', '💧', '⚡', '🔥',
+  '🌠', '⭐', '🌟', '✨', '💫', '☄️', '🌞', '🌝',
+  '🔮', '💎', '💍', '👑', '🎩', '🎓', '🎯', '🎪'
+];
+
+// Emojis desmotivacionais/realistas
+const unmotivationalEmojis = [
+  '😐', '🤷', '😑', '🙄', '😴', '🤨', '😒', '🫤',
+  '😮‍💨', '🤦', '😶', '🫠', '😵‍💫', '🤯', '😅', '😬',
+  '😪', '😓', '😰', '😨', '😱', '😖', '😣', '😞',
+  '😔', '😟', '😕', '🙁', '☹️', '😦', '😧', '😩',
+  '🤐', '🤔', '🙃', '😵', '🤪', '🤭', '🤫', '🤥',
+  '😷', '🤒', '🤕', '🤢', '🤮', '🤧', '🥵', '🥶',
+  '🥴', '😎', '🤓', '🧐', '😤', '😠', '😡', '🤬',
+  '☠️', '💀', '👻', '👽', '🤖', '🎭', '💩', '🤡',
+  '🙈', '🙉', '🙊', '🐒', '🦥', '🐌', '🐢', '🦴',
+  '⚰️', '🪦', '⚱️', '🗿', '🧨', '💣', '⏰', '⏳',
+  '🌧️', '⛈️', '🌩️', '❄️', '🌨️', '☁️', '🌫️', '🌪️',
+  '🔥', '💥', '⚡', '🌊', '🌋', '🗻', '🏔️', '⛰️'
+];
+
 /**
  * Generates a seeded random number based on a string input
  * @param seed String to use as seed
@@ -25,6 +58,26 @@ function seededRandom(seed: string): number {
  */
 export function formatDate(date: Date): string {
   return date.toISOString().split('T')[0];
+}
+
+/**
+ * Generates a random emoji based on name and date
+ * @param name User's name
+ * @param date Current date
+ * @param isUnmotivational Whether to use unmotivational emojis
+ * @returns A random emoji
+ */
+export function generateEmoji(name: string, date: string, isUnmotivational: boolean): string {
+  // Create a seed from the name and date for emoji selection
+  const emojiSeed = `${name.toLowerCase()}-${date}-emoji`;
+
+  // Select the appropriate emoji collection
+  const emojiCollection = isUnmotivational ? unmotivationalEmojis : motivationalEmojis;
+
+  // Get a random index based on the seed
+  const randomIndex = Math.floor(seededRandom(emojiSeed) * emojiCollection.length);
+
+  return emojiCollection[randomIndex];
 }
 
 /**
