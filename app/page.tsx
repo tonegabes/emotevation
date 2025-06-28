@@ -32,7 +32,49 @@ export default function Home() {
   const [showShareOptions, setShowShareOptions] = useState(false);
   const [firstLoad, setFirstLoad] = useState(true);
   const [errorState, setErrorState] = useState<Error | null>(null);
+  const [shouldAutoGenerate, setShouldAutoGenerate] = useState(false);
   const inputNameRef = useRef<HTMLInputElement>(null);
+
+        // Get name from URL parameters on component mount
+  useEffect(() => {
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const nameFromUrl = urlParams.get('name');
+
+      if (nameFromUrl) {
+        // Decode URI component to handle special characters
+        const decodedName = decodeURIComponent(nameFromUrl).trim();
+        if (decodedName) {
+          setName(decodedName);
+          setShouldAutoGenerate(true);
+        }
+      }
+    } catch (error) {
+      console.error('Error reading URL parameters:', error);
+    }
+  }, []);
+
+  // Update URL when name changes (with debouncing to avoid too many URL updates)
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      try {
+        const url = new URL(window.location.href);
+
+        if (name.trim()) {
+          url.searchParams.set('name', encodeURIComponent(name.trim()));
+        } else {
+          url.searchParams.delete('name');
+        }
+
+        // Update URL without triggering a page reload
+        window.history.replaceState({}, '', url.toString());
+      } catch (error) {
+        console.error('Error updating URL:', error);
+      }
+    }, 500); // Debounce for 500ms
+
+    return () => clearTimeout(timeoutId);
+  }, [name]);
 
   // Add error boundary handling
   useEffect(() => {
@@ -51,6 +93,14 @@ export default function Home() {
       setErrorState(error as Error);
     }
   }, []);
+
+  // Auto-generate quote when name is from URL and date is ready
+  useEffect(() => {
+    if (shouldAutoGenerate && name.trim() && currentDate && !hasGenerated && !isGenerating) {
+      setShouldAutoGenerate(false); // Prevent multiple auto-generations
+      handleGenerateQuote();
+    }
+  }, [shouldAutoGenerate, name, currentDate, hasGenerated, isGenerating]);
 
   const handleGenerateQuote = () => {
     if (name.trim() === "") return;
@@ -205,7 +255,7 @@ export default function Home() {
       </div>
 
       <div className="container mx-auto px-4 py-6 md:py-12 flex flex-col items-center flex-grow z-10">
-        <header className="mb-8 md:mb-12 text-center max-w-2xl mx-auto">
+        <header className="mb-8 md:mb-12 text-center max-w-4xl mx-auto">
           <motion.h1
             className="text-3xl md:text-5xl lg:text-6xl font-bold mb-3 md:mb-4 bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-violet-500"
             initial={{ opacity: 0, y: -20 }}
@@ -216,7 +266,9 @@ export default function Home() {
           </motion.h1>
         </header>
 
-        <main className="w-full max-w-md mx-auto flex flex-col items-center space-y-6 md:space-y-8">
+        <main className="w-full max-w-6xl mx-auto">
+          {/* Mobile and tablet layout - stacked */}
+          <div className="lg:hidden flex flex-col items-center space-y-6 md:space-y-8 max-w-md mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -339,6 +391,153 @@ export default function Home() {
               </div>
             </motion.div>
           )}
+          </div>
+
+          {/* Desktop layout - side by side */}
+          <div className="hidden lg:flex lg:gap-8 lg:items-start">
+            {/* Left side - Form */}
+            <div className="lg:w-1/2 lg:max-w-md">
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
+              >
+                <Card className="w-full shadow-md glass-card" radius="lg">
+                  <CardBody className="p-6 space-y-6">
+                    <div className="space-y-4">
+                      <Input
+                        ref={inputNameRef}
+                        label="Your Name"
+                        placeholder="Enter your name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        variant="bordered"
+                        radius="lg"
+                        fullWidth
+                        isClearable
+                        classNames={{
+                          inputWrapper: "backdrop-blur-sm bg-content1/30",
+                          label: "text-sm",
+                          input: "text-base",
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && name.trim() && !isGenerating) {
+                            handleGenerateQuote();
+                          }
+                        }}
+                      />
+
+                      <Input
+                        label="Date"
+                        type="date"
+                        value={currentDate}
+                        onChange={(e) => setCurrentDate(e.target.value)}
+                        variant="bordered"
+                        radius="lg"
+                        fullWidth
+                        classNames={{
+                          inputWrapper: "backdrop-blur-sm bg-content1/30",
+                          label: "text-sm",
+                          input: "text-base",
+                        }}
+                      />
+
+                      <motion.div
+                        whileHover={{ scale: 1.03 }}
+                        whileTap={{ scale: 0.97 }}
+                      >
+                        <Button
+                          color="secondary"
+                          size="lg"
+                          radius="lg"
+                          fullWidth
+                          isDisabled={!name.trim() || isGenerating}
+                          isLoading={isGenerating}
+                          spinner={<Spinner size="sm" color="white" />}
+                          onClick={handleGenerateQuote}
+                          className="font-medium text-base"
+                        >
+                          {isGenerating ? "Generating..." : "Generate Quote"}
+                        </Button>
+                      </motion.div>
+                    </div>
+                  </CardBody>
+                </Card>
+              </motion.div>
+            </div>
+
+            {/* Right side - Quote display */}
+            <div className="lg:w-1/2">
+              {/* Show skeleton while loading */}
+              {showSkeleton && !hasGenerated && (
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.5, ease: "easeOut" }}
+                >
+                  <QuoteCardSkeleton />
+                </motion.div>
+              )}
+
+              {/* Show the actual quote */}
+              {hasGenerated && !showSkeleton && (
+                <motion.div
+                  id="quote-section-desktop"
+                  className="relative"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{
+                    duration: 0.7,
+                    ease: [0.23, 1, 0.32, 1]
+                  }}
+                >
+                  <QuoteCard
+                    name={name}
+                    date={currentDate}
+                    quote={quote}
+                    isUnmotivational={quote.length > 0 ? quote.toLowerCase().includes('sorry') || quote.toLowerCase().includes('reality') : false}
+                    onCopy={copyToClipboard}
+                  />
+
+                  <div className="flex justify-center mt-4">
+                    <Tooltip content="Share this quote">
+                      <motion.div
+                        whileHover={{ scale: 1.1, rotate: 10 }}
+                        whileTap={{ scale: 0.9 }}
+                      >
+                        <Button
+                          isIconOnly
+                          variant="light"
+                          color="secondary"
+                          radius="full"
+                          className="text-lg"
+                          onClick={shareQuote}
+                        >
+                          <ShareIcon />
+                        </Button>
+                      </motion.div>
+                    </Tooltip>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Placeholder when no quote is generated yet */}
+              {!hasGenerated && !showSkeleton && (
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.5, ease: "easeOut", delay: 0.2 }}
+                  className="flex items-center justify-center h-64 lg:h-80"
+                >
+                  <div className="text-center text-default-400">
+                    <div className="text-4xl mb-4">✨</div>
+                    <p className="text-lg font-medium mb-2">Ready to inspire</p>
+                    <p className="text-sm">Enter your name to generate your personalized quote</p>
+                  </div>
+                </motion.div>
+              )}
+            </div>
+          </div>
         </main>
       </div>
 
