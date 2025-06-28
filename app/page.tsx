@@ -1,17 +1,16 @@
 "use client";
 
 import {
-  Button,
-  Card,
-  CardBody,
-  Input,
-  Spinner,
-  Tooltip
+    Button,
+    Card,
+    CardBody,
+    Input,
+    Spinner,
+    Tooltip
 } from "@nextui-org/react";
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from 'react';
 import { toast } from "sonner";
-import AchievementModal from './components/AchievementModal';
 import Footer from './components/Footer';
 import { ShareIcon } from './components/Icons';
 import AppNavbar from './components/Navbar';
@@ -32,13 +31,6 @@ export default function Home() {
   const [screenReaderMessage, setScreenReaderMessage] = useState("");
   const [showShareOptions, setShowShareOptions] = useState(false);
   const [firstLoad, setFirstLoad] = useState(true);
-  const [showAchievement, setShowAchievement] = useState(false);
-  const [currentAchievement, setCurrentAchievement] = useState({
-    title: '',
-    description: '',
-    icon: '',
-    level: 'bronze' as 'bronze' | 'silver' | 'gold'
-  });
   const [errorState, setErrorState] = useState<Error | null>(null);
   const inputNameRef = useRef<HTMLInputElement>(null);
 
@@ -76,9 +68,6 @@ export default function Home() {
       // Set screen reader announcement
       setScreenReaderMessage(`Quote generated for ${name}: ${result.text}`);
 
-      // Check for achievements
-      checkForAchievements();
-
       setIsGenerating(false);
 
       toast.success('Quote generated!', {
@@ -88,62 +77,7 @@ export default function Home() {
     }, 600);
   };
 
-  // Check for achievements based on number of quotes generated
-  const checkForAchievements = () => {
-    // Only show one achievement at a time
-    let achievementUnlocked = false;
 
-    // Get previously unlocked achievements
-    const unlockedAchievements = JSON.parse(localStorage.getItem('unlockedAchievements') || '[]');
-
-    // Get quote count from localStorage or start at 1
-    let quoteCount = parseInt(localStorage.getItem('quoteCount') || '0') + 1;
-    localStorage.setItem('quoteCount', quoteCount.toString());
-
-    // First quote achievement
-    if (quoteCount === 1 && !unlockedAchievements.includes('first_quote')) {
-      setCurrentAchievement({
-        title: 'First Steps',
-        description: 'Generated your first motivational quote!',
-        icon: '✨',
-        level: 'bronze'
-      });
-      achievementUnlocked = true;
-      unlockedAchievements.push('first_quote');
-    }
-    // 5 quotes achievement
-    else if (quoteCount >= 5 && !unlockedAchievements.includes('quote_collector')) {
-      setCurrentAchievement({
-        title: 'Quote Collector',
-        description: 'Generated 5 different quotes',
-        icon: '📚',
-        level: 'silver'
-      });
-      achievementUnlocked = true;
-      unlockedAchievements.push('quote_collector');
-    }
-    // 10 quotes achievement
-    else if (quoteCount >= 10 && !unlockedAchievements.includes('quote_enthusiast')) {
-      setCurrentAchievement({
-        title: 'Quote Enthusiast',
-        description: 'Generated 10 different quotes',
-        icon: '🏆',
-        level: 'gold'
-      });
-      achievementUnlocked = true;
-      unlockedAchievements.push('quote_enthusiast');
-    }
-
-    // If an achievement was unlocked, save and show it
-    if (achievementUnlocked) {
-      localStorage.setItem('unlockedAchievements', JSON.stringify(unlockedAchievements));
-
-      // Delay showing the achievement until after the quote is displayed
-      setTimeout(() => {
-        setShowAchievement(true);
-      }, 1500);
-    }
-  };
 
   const shareQuote = async () => {
     if (!quote) return;
@@ -225,12 +159,6 @@ export default function Home() {
         quote={quote}
         name={name}
         date={currentDate}
-      />
-
-      <AchievementModal
-        isOpen={showAchievement}
-        onClose={() => setShowAchievement(false)}
-        achievement={currentAchievement}
       />
 
       <AppNavbar />
